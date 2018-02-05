@@ -3,9 +3,15 @@ using System.Collections;
 using System;
 using System.Diagnostics;
 
-public class HardWareTest : MonoBehaviour 
+public class HardWareTest : MonoBehaviour
 {
-	public UILabel[] m_Label;
+    public enum JiaMiJiaoYanEnum
+    {
+        Null,
+        Succeed,
+        Failed,
+    }
+    public UILabel[] m_Label;
 	public UILabel m_HitTimmerSet;
 	public UISlider m_HitTimmerValue;
 	public UILabel m_FallTimmerSet;
@@ -33,7 +39,7 @@ public class HardWareTest : MonoBehaviour
 		pcvr.CloseFangXiangPanPower();
 	}
 	public UILabel BeiYongYouMenLabel;
-	void Update () 
+	void FixedUpdate () 
 	{
         //TouBiLabel.text = GlobalData.CoinCur.ToString();
         //ShaCheLabel.text = pcvr.ShaCheCurPcvr.ToString();
@@ -50,23 +56,55 @@ public class HardWareTest : MonoBehaviour
 
     void GetMessage()
     {
-        if (!MyCOMDevice.ComThreadClass.IsReadComMsg)
+        if (pcvr.GetInstance().CheckGetMsgInfoIsError(MyCOMDevice.ComThreadClass.ReadByteMsg))
         {
-            return;
-        }
-
-        if (MyCOMDevice.ComThreadClass.IsReadMsgComTimeOut)
-        {
-            return;
-        }
-
-        if (MyCOMDevice.ComThreadClass.ReadByteMsg.Length < (MyCOMDevice.ComThreadClass.BufLenRead - MyCOMDevice.ComThreadClass.BufLenReadEnd))
-        {
-            //Debug.Log("ReadBufLen was wrong! len is "+MyCOMDevice.ComThreadClass.ReadByteMsg.Length);
             return;
         }
         UpdateDianWeiQiDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
         UpdateBiZhiDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
+        UpdateAnJianLbDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
+        UpdateBianMaQiLbDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
+        CheckKaiFangAnJianInfo(MyCOMDevice.ComThreadClass.ReadByteMsg[33]);
+        UpdateBiZhiPlayerInfo();
+    }
+    
+    /// <summary>
+    /// 点击打印彩票按键.
+    /// </summary>
+    public void OnClickPrintCaiPiao(GameObject btGroup, GameObject btPrint)
+    {
+        string btGroupName = btGroup.name;
+        string btPrintName = btPrint.name;
+        pcvr.CaiPiaoJi caiPiaoJi = pcvr.CaiPiaoJi.Null;
+        pcvr.CaiPiaoPrintCmd printCmd = pcvr.CaiPiaoPrintCmd.WuXiao;
+        switch (btGroupName)
+        {
+            case "caiPiaoJi01":
+                {
+                    caiPiaoJi = pcvr.CaiPiaoJi.Num01;
+                    break;
+                }
+            case "caiPiaoJi02":
+                {
+                    caiPiaoJi = pcvr.CaiPiaoJi.Num02;
+                    break;
+                }
+        }
+
+        switch (btPrintName)
+        {
+            case "Button_01":
+                {
+                    printCmd = pcvr.CaiPiaoPrintCmd.QuanPiaoPrint;
+                    break;
+                }
+            case "Button_02":
+                {
+                    printCmd = pcvr.CaiPiaoPrintCmd.BanPiaoPrint;
+                    break;
+                }
+        }
+        pcvr.GetInstance().SetCaiPiaoPrintState(printCmd, caiPiaoJi);
     }
 
     /// <summary>
@@ -75,6 +113,11 @@ public class HardWareTest : MonoBehaviour
     public UILabel[] DianWeiQiLb;
     void UpdateDianWeiQiDt(byte[] buffer)
     {
+        if (pcvr.GetInstance().CheckADKeyIsError(buffer[46]))
+        {
+            //return;
+        }
+
         DianWeiQiLb[0].text = ((((uint)buffer[2] & 0x0f) << 8) + buffer[3]).ToString();
         DianWeiQiLb[1].text = ((((uint)buffer[4] & 0x0f) << 8) + buffer[5]).ToString();
         DianWeiQiLb[2].text = ((((uint)buffer[6] & 0x0f) << 8) + buffer[7]).ToString();
@@ -89,6 +132,10 @@ public class HardWareTest : MonoBehaviour
     /// BiZhiLb[x]: 0 币值1, 1 币值2.
     /// </summary>
     public UILabel[] BiZhiLb;
+    /// <summary>
+    /// BiZhiPlayerLb[x]: 0 玩家1, 1 玩家2, 2 玩家3, 3 玩家4.
+    /// </summary>
+    public UILabel[] BiZhiPlayerLb;
     void UpdateBiZhiDt(byte[] buffer)
     {
         BiZhiLb[0].text = buffer[18].ToString("X2");
@@ -104,8 +151,7 @@ public class HardWareTest : MonoBehaviour
         BianMaQiLb[0].text = buffer[30].ToString("X2");
         BianMaQiLb[1].text = buffer[31].ToString("X2");
     }
-
-
+    
     /// <summary>
     /// AnJianLb[x]: 0 按键1, 1 按键2.
     /// </summary>
@@ -181,6 +227,13 @@ public class HardWareTest : MonoBehaviour
     byte[] AnJianState = new byte[15];
     void CheckAnJianDt(AnJianDt anJianDtVal)
     {
+        //test
+        //if (anJianDtVal.IndexAnJian != AnJianIndex.bt03)
+        //{
+        //    return;
+        //}
+        //test
+
         byte indexVal = (byte)anJianDtVal.IndexAnJian;
         indexVal -= 1;
         if ((anJianDtVal.YouXiaoDt & anJianDtVal.YouXiao_01) == anJianDtVal.YouXiao_01 && (anJianDtVal.YouXiaoDt & anJianDtVal.YouXiao_02) != anJianDtVal.YouXiao_02)
@@ -189,12 +242,14 @@ public class HardWareTest : MonoBehaviour
             if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_01) == anJianDtVal.AnJianKey_01 && AnJianState[indexVal] == 0)
             {
                 AnJianState[indexVal] = 1;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.DOWN);
+                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.UP);
+                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-UP: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_01 " + anJianDtVal.YouXiao_01.ToString("X2") + ", AnJianKey_01 " + anJianDtVal.AnJianKey_01.ToString("X2"));
             }
             else if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_01) == 0x00 && AnJianState[indexVal] == 1)
             {
                 AnJianState[indexVal] = 0;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.UP);
+                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.DOWN);
+                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-DOWN: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_01 " + anJianDtVal.YouXiao_01.ToString("X2") + ", AnJianKey_01 " + anJianDtVal.AnJianKey_01.ToString("X2"));
             }
         }
 
@@ -204,13 +259,78 @@ public class HardWareTest : MonoBehaviour
             if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_02) == anJianDtVal.AnJianKey_02 && AnJianState[indexVal] == 0)
             {
                 AnJianState[indexVal] = 1;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.DOWN);
+                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.UP);
+                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-UP: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_02 " + anJianDtVal.YouXiao_02.ToString("X2") + ", AnJianKey_02 " + anJianDtVal.AnJianKey_02.ToString("X2"));
             }
             else if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_02) == 0x00 && AnJianState[indexVal] == 1)
             {
                 AnJianState[indexVal] = 0;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.UP);
+                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.DOWN);
+                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-DOWN: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_02 " + anJianDtVal.YouXiao_02.ToString("X2") + ", AnJianKey_02 " + anJianDtVal.AnJianKey_02.ToString("X2"));
             }
+        }
+    }
+
+    void CheckKaiFangAnJianInfo(byte buffer)
+    {
+        //按键11（彩票3）
+        if ((buffer & 0x01) == 0x01 && AnJianState[10] == 0)
+        {
+            AnJianState[10] = 1;
+            UpdateAnJianLbInfo(AnJianIndex.bt11, ButtonState.UP);
+        }
+        else if ((buffer & 0x01) == 0x00 && AnJianState[10] == 1)
+        {
+            AnJianState[10] = 0;
+            UpdateAnJianLbInfo(AnJianIndex.bt11, ButtonState.DOWN);
+        }
+
+        //按键12（彩票4）
+        if ((buffer & 0x02) == 0x02 && AnJianState[11] == 0)
+        {
+            AnJianState[11] = 1;
+            UpdateAnJianLbInfo(AnJianIndex.bt12, ButtonState.UP);
+        }
+        else if ((buffer & 0x02) == 0x00 && AnJianState[11] == 1)
+        {
+            AnJianState[11] = 0;
+            UpdateAnJianLbInfo(AnJianIndex.bt12, ButtonState.DOWN);
+        }
+
+        //按键12（编码A）
+        if ((buffer & 0x04) == 0x04 && AnJianState[12] == 0)
+        {
+            AnJianState[12] = 1;
+            UpdateAnJianLbInfo(AnJianIndex.bt13, ButtonState.UP);
+        }
+        else if ((buffer & 0x04) == 0x00 && AnJianState[12] == 1)
+        {
+            AnJianState[12] = 0;
+            UpdateAnJianLbInfo(AnJianIndex.bt13, ButtonState.DOWN);
+        }
+
+        //按键14（编码B）
+        if ((buffer & 0x08) == 0x08 && AnJianState[13] == 0)
+        {
+            AnJianState[13] = 1;
+            UpdateAnJianLbInfo(AnJianIndex.bt14, ButtonState.UP);
+        }
+        else if ((buffer & 0x08) == 0x00 && AnJianState[13] == 1)
+        {
+            AnJianState[13] = 0;
+            UpdateAnJianLbInfo(AnJianIndex.bt14, ButtonState.DOWN);
+        }
+
+        //按键15（投币2）
+        if ((buffer & 0x10) == 0x10 && AnJianState[14] == 0)
+        {
+            AnJianState[14] = 1;
+            UpdateAnJianLbInfo(AnJianIndex.bt15, ButtonState.UP);
+        }
+        else if ((buffer & 0x10) == 0x00 && AnJianState[14] == 1)
+        {
+            AnJianState[14] = 0;
+            UpdateAnJianLbInfo(AnJianIndex.bt15, ButtonState.DOWN);
         }
     }
 
@@ -222,12 +342,12 @@ public class HardWareTest : MonoBehaviour
         {
             case ButtonState.DOWN:
                 {
-                    AnJianLb[indexVal].text = "1";
+                    AnJianLb[indexVal].text = "按下";
                     break;
                 }
             case ButtonState.UP:
                 {
-                    AnJianLb[indexVal].text = "0";
+                    AnJianLb[indexVal].text = "弹起";
                     break;
                 }
         }
@@ -235,15 +355,18 @@ public class HardWareTest : MonoBehaviour
 
     void UpdateAnJianLbDt(byte[] buffer)
     {
-        //byte youXiao_01 = 0x10; //有效数据01
-        //byte youXiao_02 = 0x40; //有效数据02
-        //byte anJianKey = 0x00; //按键数据.
-        //byte indexYouXiao = 21; //有效数据索引.
-        //byte indexAnJian = 20; //按键数据索引.
-        //byte indexAnJianTx = 0; //按键数据文本索引.
+        //键值有效位 2、3、5、7分别是1101
+        if ((buffer[41] & 0x02) != 0x02
+            || (buffer[41] & 0x04) != 0x04
+            || (buffer[41] & 0x10) == 0x10
+            || (buffer[41] & 0x40) != 0x40)
+        {
+            UnityEngine.Debug.LogWarning("UpdateAnJianLbDt -> btKey was wrong! key is " + buffer[41].ToString("X2"));
+            return;
+        }
 
         //按键1（投币3）
-        AnJianDt anJianDtVal = new AnJianDt(AnJianIndex.bt01, buffer[21], buffer[20], 0x10, 0x40, 0x40, 0x10);
+        AnJianDt anJianDtVal = new AnJianDt(AnJianIndex.bt01, buffer[21], buffer[20], 0x10, 0x40, 0x04, 0x10);
         CheckAnJianDt(anJianDtVal);
 
         //按键2（投币4）
@@ -251,8 +374,8 @@ public class HardWareTest : MonoBehaviour
         CheckAnJianDt(anJianDtVal);
 
         //按键3（开始1）
-        //anJianDtVal = new AnJianDt(AnJianIndex.bt03, buffer[22], buffer[35], 0x10, 0x40, 0x20, 0x80);
-        //CheckAnJianDt(anJianDtVal);
+        anJianDtVal = new AnJianDt(AnJianIndex.bt03, buffer[52], buffer[35], 0x10, 0x40, 0x20, 0x80);
+        CheckAnJianDt(anJianDtVal);
 
         //按键4（开始2）
         anJianDtVal = new AnJianDt(AnJianIndex.bt04, buffer[51], buffer[38], 0x04, 0x10, 0x04, 0x10);
@@ -386,33 +509,33 @@ public class HardWareTest : MonoBehaviour
         //}
     }
 
-    void ClickSetEnterBtEvent(ButtonState val)
-	{
-		if (val == ButtonState.DOWN) {
-			AnJianLabel.text = "SetEnter Down";
-		}
-		else {
-			AnJianLabel.text = "SetEnter Up";
-		}
-	}
-	void ClickLaBaBtEvent(ButtonState val)
-	{
-		if (val == ButtonState.DOWN) {
-			AnJianLabel.text = "SpeakerBtDown";
-		}
-		else {
-			AnJianLabel.text = "SpeakerBtUp";
-		}
-	}
-	void ClickSetMoveBtEvent(ButtonState val)
-	{
-		if (val == ButtonState.DOWN) {
-			AnJianLabel.text = "SetMove Down";
-		}
-		else {
-			AnJianLabel.text = "SetMove Up";
-		}
-	}
+ //   void ClickSetEnterBtEvent(ButtonState val)
+	//{
+	//	if (val == ButtonState.DOWN) {
+	//		AnJianLabel.text = "SetEnter Down";
+	//	}
+	//	else {
+	//		AnJianLabel.text = "SetEnter Up";
+	//	}
+	//}
+	//void ClickLaBaBtEvent(ButtonState val)
+	//{
+	//	if (val == ButtonState.DOWN) {
+	//		AnJianLabel.text = "SpeakerBtDown";
+	//	}
+	//	else {
+	//		AnJianLabel.text = "SpeakerBtUp";
+	//	}
+	//}
+	//void ClickSetMoveBtEvent(ButtonState val)
+	//{
+	//	if (val == ButtonState.DOWN) {
+	//		AnJianLabel.text = "SetMove Down";
+	//	}
+	//	else {
+	//		AnJianLabel.text = "SetMove Up";
+	//	}
+	//}
 	//void ClickStartBtOneEvent(ButtonState val)
 	//{
 	//	if (val == ButtonState.DOWN) {
@@ -422,15 +545,15 @@ public class HardWareTest : MonoBehaviour
 	//		AnJianLabel.text = "StartBt Up";
 	//	}
 	//}
-	void ClickCloseDongGanBtEvent(ButtonState val)
-	{
-		if (val == ButtonState.DOWN) {
-			AnJianLabel.text = "DongGanBt Down";
-		}
-		else {
-			AnJianLabel.text = "DongGanBt Up";
-		}
-	}
+	//void ClickCloseDongGanBtEvent(ButtonState val)
+	//{
+	//	if (val == ButtonState.DOWN) {
+	//		AnJianLabel.text = "DongGanBt Down";
+	//	}
+	//	else {
+	//		AnJianLabel.text = "DongGanBt Up";
+	//	}
+	//}
 	//public void OnClickForwardBt()
 	//{
 		//if(pcvr.m_IsOpneQinang3)
@@ -485,8 +608,19 @@ public class HardWareTest : MonoBehaviour
 	//}
 	public void OnClickSubCoinBt()
 	{
-		pcvr.GetInstance().SubPlayerCoin(1);
-	}
+		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player01);
+		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player02);
+		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player03);
+		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player04);
+    }
+
+    void UpdateBiZhiPlayerInfo()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            BiZhiPlayerLb[i].text = pcvr.GetInstance().PlayerCoinArray[i].ToString();
+        }
+    }
 	//public UILabel ShaCheDengLabel;
 	//int ShaCheCount;
 	//public void OnClickShaCheLightBt()
@@ -519,8 +653,15 @@ public class HardWareTest : MonoBehaviour
 	public GameObject JiaMiJiaoYanCtrlObj;
 	public void OnClickRestartAppBt()
 	{
-		Application.Quit();
-		RunCmd("start ComTest.exe");
+        try
+        {
+            Application.Quit();
+            RunCmd("start ComTest.exe");
+        }
+        catch (Exception ex)
+        {
+            UnityEngine.Debug.Log("OnClickRestartAppBt::ex -> " + ex);
+        }
 	}
 	void RunCmd(string command)
 	{
@@ -540,125 +681,167 @@ public class HardWareTest : MonoBehaviour
 		//p.StandardInput.WriteLine(command); //也可以用這種方式輸入要執行的命令    
 		//p.StandardInput.WriteLine("exit");        //不過要記得加上Exit要不然下一行程式執行的時候會當機    return p.StandardOutput.ReadToEnd();        //從輸出流取得命令執行結果
 	}
-	public float m_HitshakeTimmerSet = 1.0f;
-	private float m_HitshakeTimmer = 0.0f;
-	public static bool m_IsHitshake = false;
-	public void OnHitShake()
-	{
-		pcvr.GetInstance().OpenFangXiangPanZhenDong();
-		if (m_IsHitshake) {
-			return;
-		}
-		//UnityEngine.Debug.Log("OnHitShake...");
-		m_IsHitshake = true;
-	}
-	void TestLoopOpenFangXiangPanZhenDong()
-	{
-//		UnityEngine.Debug.Log("TestLoopOpenFangXiangPanZhenDong...");
-		pcvr.GetInstance().OpenFangXiangPanZhenDong();
-	}
-	void OnShakeHit()
-	{
-		if(m_IsHitshake)
-		{
-			if(m_HitshakeTimmer<m_HitshakeTimmerSet)
-			{
-				m_HitshakeTimmer+=Time.deltaTime;
-				if(m_HitshakeTimmer<m_HitshakeTimmerSet*0.25f || (m_HitshakeTimmer>=m_HitshakeTimmerSet*0.5f && m_HitshakeTimmer<m_HitshakeTimmerSet*0.75f))
-				{
-					//pcvr.m_IsOpneForwardQinang = false;
-					//pcvr.m_IsOpneBehindQinang = false;
-					//pcvr.m_IsOpneLeftQinang = false;
-					//pcvr.m_IsOpneRightQinang = true;
-				}
-				else if((m_HitshakeTimmer>=m_HitshakeTimmerSet*0.25f &&m_HitshakeTimmer<m_HitshakeTimmerSet*0.5f) || m_HitshakeTimmer>=m_HitshakeTimmerSet*0.75f)
-				{
-					//pcvr.m_IsOpneForwardQinang = false;
-					//pcvr.m_IsOpneBehindQinang = false;
-					//pcvr.m_IsOpneLeftQinang = true;
-					//pcvr.m_IsOpneRightQinang = false;
-				}
-			}
-			else
-			{
-				m_HitshakeTimmer = 0.0f;
-                m_IsHitshake = false;
-                //pcvr.m_IsOpneForwardQinang = false;
-                //pcvr.m_IsOpneBehindQinang = false;
-                //pcvr.m_IsOpneLeftQinang = false;
-                //pcvr.m_IsOpneRightQinang = false;
-            }
-		}
-	}
+	//public float m_HitshakeTimmerSet = 1.0f;
+	//private float m_HitshakeTimmer = 0.0f;
+	//public static bool m_IsHitshake = false;
+	//public void OnHitShake()
+	//{
+	//	pcvr.GetInstance().OpenFangXiangPanZhenDong();
+	//	if (m_IsHitshake) {
+	//		return;
+	//	}
+	//	//UnityEngine.Debug.Log("OnHitShake...");
+	//	m_IsHitshake = true;
+	//}
+//	void TestLoopOpenFangXiangPanZhenDong()
+//	{
+////		UnityEngine.Debug.Log("TestLoopOpenFangXiangPanZhenDong...");
+//		pcvr.GetInstance().OpenFangXiangPanZhenDong();
+//	}
+	//void OnShakeHit()
+	//{
+	//	if(m_IsHitshake)
+	//	{
+	//		if(m_HitshakeTimmer<m_HitshakeTimmerSet)
+	//		{
+	//			m_HitshakeTimmer+=Time.deltaTime;
+	//			if(m_HitshakeTimmer<m_HitshakeTimmerSet*0.25f || (m_HitshakeTimmer>=m_HitshakeTimmerSet*0.5f && m_HitshakeTimmer<m_HitshakeTimmerSet*0.75f))
+	//			{
+	//				//pcvr.m_IsOpneForwardQinang = false;
+	//				//pcvr.m_IsOpneBehindQinang = false;
+	//				//pcvr.m_IsOpneLeftQinang = false;
+	//				//pcvr.m_IsOpneRightQinang = true;
+	//			}
+	//			else if((m_HitshakeTimmer>=m_HitshakeTimmerSet*0.25f &&m_HitshakeTimmer<m_HitshakeTimmerSet*0.5f) || m_HitshakeTimmer>=m_HitshakeTimmerSet*0.75f)
+	//			{
+	//				//pcvr.m_IsOpneForwardQinang = false;
+	//				//pcvr.m_IsOpneBehindQinang = false;
+	//				//pcvr.m_IsOpneLeftQinang = true;
+	//				//pcvr.m_IsOpneRightQinang = false;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			m_HitshakeTimmer = 0.0f;
+ //               m_IsHitshake = false;
+ //               //pcvr.m_IsOpneForwardQinang = false;
+ //               //pcvr.m_IsOpneBehindQinang = false;
+ //               //pcvr.m_IsOpneLeftQinang = false;
+ //               //pcvr.m_IsOpneRightQinang = false;
+ //           }
+	//	}
+	//}
 
-	public UILabel StartLightLabel;
-	int LightStart = 1;
-	public void OnClickStartLightBt()
+	public UILabel[] LedLabel = new UILabel[24];
+	public void OnClickLedBt(string parentName, string selfName)
 	{
-		LightStart++;
-		//Debug.Log("**************LightStart "+LightStart);
-		switch (LightStart) {
-		case 1:
-			StartLightLabel.text = "开始灯亮";
-			//pcvr.StartBtLight = StartLightState.Liang;
+        int parentIndex = Convert.ToInt32(parentName.Substring(parentName.Length - 2, 2));
+        int selfIndex = Convert.ToInt32(selfName.Substring(selfName.Length - 2, 2));
+        int indexVal = ((parentIndex - 1) * 8) + selfIndex;
+        if (indexVal < 1 || indexVal > 24)
+        {
+            UnityEngine.Debug.LogError("OnClickLedBt -> indexVal was wrong! indexVal " + indexVal);
+            return;
+        }
+
+        int indexValTmp = indexVal - 1;
+        pcvr.LedState[indexValTmp] = !pcvr.LedState[indexValTmp];
+		switch (pcvr.LedState[indexValTmp]) {
+		case true:
+			LedLabel[indexValTmp].text = indexVal + "灯亮";
 			break;
 
-		case 2:
-			StartLightLabel.text = "开始灯闪";
-			//pcvr.StartBtLight = StartLightState.Shan;
-			break;
-
-		case 3:
-			StartLightLabel.text = "开始灯灭";
-			//pcvr.StartBtLight = StartLightState.Mie;
-			LightStart = 1;
-			break;
-		}
-	}
-
-	public UILabel FangXiangPanPowerLabel;
-	public void OnClickFangXiangPanPowerBt()
-	{
-		switch (FangXiangPanPowerLabel.text) {
-		case "方向盘力关闭":
-			FangXiangPanPowerLabel.text = "方向盘力打开";
-			pcvr.OpenFangXiangPanPower();
-			CancelInvoke("TestLoopOpenFangXiangPanZhenDong");
-			InvokeRepeating("TestLoopOpenFangXiangPanZhenDong", 0f, 0.2f);
-			break;
-
-		case "方向盘力打开":
-			FangXiangPanPowerLabel.text = "方向盘力关闭";
-			pcvr.CloseFangXiangPanPower();
-			CancelInvoke("TestLoopOpenFangXiangPanZhenDong");
+		case false:
+			LedLabel[indexValTmp].text = indexVal + "灯灭";
 			break;
 		}
 	}
 
-	public UILabel DongGanLightLabel;
-	int LightDongGan = 1;
-	public void OnClickDongGanLightBt()
-	{
-		LightDongGan++;
-		//Debug.Log("**************LightDongGan "+LightDongGan);
-		switch (LightDongGan) {
-		case 1:
-			DongGanLightLabel.text = "动感灯亮";
-			//pcvr.DongGanBtLight = StartLightState.Liang;
-			break;
+    public UILabel[] JiDianQiLbArray;
+    /// <summary>
+    /// 点击继电器控制按键.
+    /// </summary>
+    public void OnClickJiDianQiBt(GameObject bt)
+    {
+        int indexVal = 0;
+        string lbHead = "";
+        string btName = bt.name;
+        switch (btName)
+        {
+            case "Button_01":
+                {
+                    indexVal = 0;
+                    lbHead = "1继电器";
+                    break;
+                }
+            case "Button_02":
+                {
+                    indexVal = 1;
+                    lbHead = "2继电器";
+                    break;
+                }
+        }
+
+        switch (pcvr.GetInstance().JiDianQiCmdArray[indexVal])
+        {
+            case pcvr.JiDianQiCmd.Close:
+                {
+                    pcvr.GetInstance().JiDianQiCmdArray[indexVal] = pcvr.JiDianQiCmd.Open;
+                    JiDianQiLbArray[indexVal].text = lbHead + "打开";
+                    break;
+                }
+            case pcvr.JiDianQiCmd.Open:
+                {
+                    pcvr.GetInstance().JiDianQiCmdArray[indexVal] = pcvr.JiDianQiCmd.Close;
+                    JiDianQiLbArray[indexVal].text = lbHead + "关闭";
+                    break;
+                }
+        }
+    }
+
+	//public UILabel FangXiangPanPowerLabel;
+	//public void OnClickFangXiangPanPowerBt()
+	//{
+	//	switch (FangXiangPanPowerLabel.text) {
+	//	case "方向盘力关闭":
+	//		FangXiangPanPowerLabel.text = "方向盘力打开";
+	//		pcvr.OpenFangXiangPanPower();
+	//		CancelInvoke("TestLoopOpenFangXiangPanZhenDong");
+	//		InvokeRepeating("TestLoopOpenFangXiangPanZhenDong", 0f, 0.2f);
+	//		break;
+
+	//	case "方向盘力打开":
+	//		FangXiangPanPowerLabel.text = "方向盘力关闭";
+	//		pcvr.CloseFangXiangPanPower();
+	//		CancelInvoke("TestLoopOpenFangXiangPanZhenDong");
+	//		break;
+	//	}
+	//}
+
+	//public UILabel DongGanLightLabel;
+	//int LightDongGan = 1;
+	//public void OnClickDongGanLightBt()
+	//{
+	//	LightDongGan++;
+	//	//Debug.Log("**************LightDongGan "+LightDongGan);
+	//	switch (LightDongGan) {
+	//	case 1:
+	//		DongGanLightLabel.text = "动感灯亮";
+	//		//pcvr.DongGanBtLight = StartLightState.Liang;
+	//		break;
 			
-		case 2:
-			DongGanLightLabel.text = "动感灯闪";
-			//pcvr.DongGanBtLight = StartLightState.Shan;
-			break;
+	//	case 2:
+	//		DongGanLightLabel.text = "动感灯闪";
+	//		//pcvr.DongGanBtLight = StartLightState.Shan;
+	//		break;
 			
-		case 3:
-			DongGanLightLabel.text = "动感灯灭";
-			//pcvr.DongGanBtLight = StartLightState.Mie;
-			LightDongGan = 1;
-			break;
-		}
-	}
+	//	case 3:
+	//		DongGanLightLabel.text = "动感灯灭";
+	//		//pcvr.DongGanBtLight = StartLightState.Mie;
+	//		LightDongGan = 1;
+	//		break;
+	//	}
+	//}
 	
 	public UILabel JiaMiJYLabel;
 	public UILabel JiaMiJYMsg;
@@ -745,12 +928,4 @@ public class HardWareTest : MonoBehaviour
 			break;
 		}
 	}
-
-}
-
-public enum JiaMiJiaoYanEnum
-{
-	Null,
-	Succeed,
-	Failed,
 }

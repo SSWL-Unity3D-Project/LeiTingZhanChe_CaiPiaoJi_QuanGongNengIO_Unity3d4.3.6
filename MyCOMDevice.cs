@@ -10,14 +10,11 @@ public class MyCOMDevice : MonoBehaviour
 	{
 		public string ThreadName;
         static SerialPort _SerialPort;
-        public static int BufLenRead = 58;
-		public static int BufLenReadEnd = 4;
+        public static int BufLenRead = 60;
 		public static  int BufLenWrite = 50;
 		public static byte[] ReadByteMsg = new byte[BufLenRead];
 		public static byte[] WriteByteMsg = new byte[BufLenWrite];
-		static string RxStringData;
-//		static string _NewLine = "ABCD"; //0x41 0x42 0x43 0x44
-		public static int ReadTimeout = 0x0050; //单位为毫秒.
+		public static int ReadTimeout = 0x007d0; //单位为毫秒.
 		public static int WriteTimeout = 0x07d0;
 		public static bool IsStopComTX;
 		public static bool IsReadMsgComTimeOut;
@@ -80,23 +77,27 @@ public class MyCOMDevice : MonoBehaviour
 		public void Run()
 		{
 			do
-			{
+            {
                 COMTxData();
-				if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
-					Thread.Sleep(100);
-				}
-				else {
-					Thread.Sleep(25);
-				}
-
+                //if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
+                //if (pcvr.IsJiaoYanHid)
+                //{
+                //    Thread.Sleep(100);
+                //}
+                //else
+                //{
+                //    Thread.Sleep(8);
+                //}
                 COMRxData();
-				if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
-					Thread.Sleep(100);
-				}
-				else {
-					Thread.Sleep(25);
-				}
-				IsTestWRPer = true;
+                if (pcvr.IsJiaoYanHid)
+                {
+                    Thread.Sleep(100);
+                }
+                else
+                {
+                    Thread.Sleep(15);
+                }
+                IsTestWRPer = true;
             }
 			while (_SerialPort.IsOpen);
 			CloseComPort();
@@ -106,8 +107,8 @@ public class MyCOMDevice : MonoBehaviour
 		void COMTxData()
 		{
 			try
-			{
-				IsReadComMsg = false;
+            {
+                IsReadComMsg = false;
 				_SerialPort.Write(WriteByteMsg, 0, WriteByteMsg.Length);
 				WriteCount++;
 			}
@@ -202,7 +203,7 @@ public class MyCOMDevice : MonoBehaviour
 		}
 		yield return new WaitForSeconds(2f);
 
-		ComThreadClass.OpenComPort();
+		//ComThreadClass.OpenComPort();
 		if (ComThread == null) {
 			ComThread = new Thread(new ThreadStart(_ComThreadClass.Run));
 			ComThread.Start();
@@ -225,8 +226,7 @@ public class MyCOMDevice : MonoBehaviour
 
 	void OnApplicationQuit()
 	{
-		Debug.Log("OnApplicationQuit...Com");
-		//XkGameCtrl.IsGameOnQuit = true;
+        Debug.Log("OnApplicationQuit...Com");
 		ComThreadClass.CloseComPort();
         CloseComThread();
     }
