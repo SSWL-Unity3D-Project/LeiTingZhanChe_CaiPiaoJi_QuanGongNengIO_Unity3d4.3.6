@@ -23,7 +23,7 @@ public class pcvr : MonoBehaviour
     /// <summary>
     /// 彩票打印状态.
     /// </summary>
-    enum CaiPiaoPrintState
+    public enum CaiPiaoPrintState
     {
         WuXiao = 0x00,
         Succeed = 0x55,
