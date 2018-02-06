@@ -8,35 +8,29 @@ public class MyCOMDevice : MonoBehaviour
 {
     public class ComThreadClass
 	{
-		public string ThreadName;
+		//string ThreadName;
         static SerialPort _SerialPort;
         public static int BufLenRead = 60;
 		public static  int BufLenWrite = 50;
 		public static byte[] ReadByteMsg = new byte[BufLenRead];
 		public static byte[] WriteByteMsg = new byte[BufLenWrite];
-		public static int ReadTimeout = 0x007d0; //单位为毫秒.
-		public static int WriteTimeout = 0x07d0;
-		public static bool IsStopComTX;
-		public static bool IsReadMsgComTimeOut;
-		public static string ComPortName = "COM1";
-		public static bool IsReadComMsg;
-		public static bool IsTestWRPer;
-		public static int WriteCount;
+		int ReadTimeout = 0x00064; //单位为毫秒.
+		int WriteTimeout = 0x07d0; //单位为毫秒.
+        public static string ComPortName = "COM1";
+		//public static int WriteCount;
 		public static int ReadCount;
-		public static int ReadTimeOutCount;
 
 		public ComThreadClass(string name)
 		{
-			ThreadName = name;
+			//ThreadName = name;
 			OpenComPort();
 		}
 
-        public static void OpenComPort()
+        /// <summary>
+        /// 打开串口.
+        /// </summary>
+        public void OpenComPort()
 		{
-			if (!pcvr.bIsHardWare) {
-				return;
-			}
-
 			if (_SerialPort != null) {
 				return;
 			}
@@ -53,18 +47,20 @@ public class MyCOMDevice : MonoBehaviour
 					}
 					else
 					{
-						_SerialPort.Open();
+                        _SerialPort.ReadTimeout = ReadTimeout;
+                        _SerialPort.WriteTimeout = WriteTimeout;
+                        _SerialPort.Open();
 						if (_SerialPort.IsOpen) {
-							IsFindDeviceDt = true;
+                            if (_Instance != null)
+                            {
+                                _Instance.IsFindDeviceDt = true;
+                            }
 							Debug.Log("COM open sucess");
                         }
 					}
 				}
 				catch (Exception exception)
 				{
-					if (ComThread == null) {
-						return;
-					}
 					Debug.Log("error:COM already opened by other PRG... " + exception);
 				}
 			}
@@ -74,21 +70,25 @@ public class MyCOMDevice : MonoBehaviour
 			}
 		}
 
+        /// <summary>
+        /// 线程运行函数.
+        /// </summary>
 		public void Run()
 		{
 			do
             {
                 COMTxData();
-                //if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr) {
+                //if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr)
                 //if (pcvr.IsJiaoYanHid)
                 //{
                 //    Thread.Sleep(100);
                 //}
                 //else
                 //{
-                //    Thread.Sleep(8);
+                //    Thread.Sleep(15);
                 //}
                 COMRxData();
+                //if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr)
                 if (pcvr.IsJiaoYanHid)
                 {
                     Thread.Sleep(100);
@@ -97,56 +97,50 @@ public class MyCOMDevice : MonoBehaviour
                 {
                     Thread.Sleep(15);
                 }
-                IsTestWRPer = true;
             }
 			while (_SerialPort.IsOpen);
 			CloseComPort();
 			Debug.Log("Close run thead...");
 		}
 
+        /// <summary>
+        /// 写串口数据.
+        /// </summary>
 		void COMTxData()
 		{
 			try
             {
-                IsReadComMsg = false;
 				_SerialPort.Write(WriteByteMsg, 0, WriteByteMsg.Length);
-				WriteCount++;
+				//WriteCount++;
 			}
 			catch (Exception exception)
 			{
-				if (ComThread == null) {
-					return;
-				}
 				Debug.Log("Tx error:COM!!! " + exception);
 			}
 		}
 
+        /// <summary>
+        /// 读串口数据.
+        /// </summary>
 		void COMRxData()
 		{
 			try
 			{
                 _SerialPort.Read(ReadByteMsg, 0, ReadByteMsg.Length);
 				ReadCount++;
-				IsReadComMsg = true;
-				ReadMsgTimeOutVal = 0f;
-				CountOpenCom = 0;
 			}
 			catch (Exception exception)
 			{
-				if (ComThread == null) {
-					return;
-				}
-
 				Debug.Log("Rx error:COM..." + exception);
-				IsReadMsgComTimeOut = true;
-				IsReadComMsg = false;
-				ReadTimeOutCount++;
 			}
 		}
 
-		public static void CloseComPort()
+        /// <summary>
+        /// 关闭串口.
+        /// </summary>
+		public void CloseComPort()
 		{
-			IsReadComMsg = false;
+			//IsReadComMsg = false;
 			if (_SerialPort == null || !_SerialPort.IsOpen) {
 				return;
 			}
@@ -155,16 +149,20 @@ public class MyCOMDevice : MonoBehaviour
 		}
 	}
 
-	static ComThreadClass _ComThreadClass;
-	static Thread ComThread;
-	public static bool IsFindDeviceDt;
-	public static float ReadMsgTimeOutVal;
-	static float TimeLastVal;
-	const float TimeUnitDelta = 0.1f; //单位为秒.
-	public static uint CountRestartCom;
-	public static uint CountOpenCom;
+    /// <summary>
+    /// 串口线程控制.
+    /// </summary>
+    ComThreadClass mComThreadClass;
+    /// <summary>
+    /// 串口IO线程.
+    /// </summary>
+	Thread mComThreadIO;
+    /// <summary>
+    /// 是否找到串口设备.
+    /// </summary>
+    [HideInInspector]
+	public bool IsFindDeviceDt;
 	static MyCOMDevice _Instance;
-
     public static MyCOMDevice GetInstance()
 	{
 		if (_Instance == null) {
@@ -177,57 +175,57 @@ public class MyCOMDevice : MonoBehaviour
     
     // Use this for initialization
     void Start()
-	{
-		StartCoroutine(OpenComThread());
+    {
+        if (pcvr.bIsHardWare)
+        {
+            StartCoroutine(OpenComThread());
+        }
 	}
 
+    /// <summary>
+    /// 打开IO线程.
+    /// </summary>
 	IEnumerator OpenComThread()
 	{
-		if (!pcvr.bIsHardWare) {
-			yield break;
-		}
-
-		ReadMsgTimeOutVal = 0f;
-		ComThreadClass.IsReadMsgComTimeOut = false;
-		ComThreadClass.IsReadComMsg = false;
-		ComThreadClass.IsStopComTX = false;
-		if (_ComThreadClass == null) {
-			_ComThreadClass = new ComThreadClass(ComThreadClass.ComPortName);
+		if (mComThreadClass == null) {
+			mComThreadClass = new ComThreadClass(ComThreadClass.ComPortName);
 		}
 		else {
-			ComThreadClass.CloseComPort();
+            mComThreadClass.CloseComPort();
 		}
 		
-		if (ComThread != null) {
+		if (mComThreadIO != null) {
 			CloseComThread();
 		}
 		yield return new WaitForSeconds(2f);
-
-		//ComThreadClass.OpenComPort();
-		if (ComThread == null) {
-			ComThread = new Thread(new ThreadStart(_ComThreadClass.Run));
-			ComThread.Start();
+        
+		if (mComThreadIO == null) {
+			mComThreadIO = new Thread(new ThreadStart(mComThreadClass.Run));
+			mComThreadIO.Start();
 		}
 	}
-//	void OnGUI()
-//	{
-//		string strA = "IsReadComMsg "+ComThreadClass.IsReadComMsg
-//			+", ReadMsgTimeOutVal "+ReadMsgTimeOutVal.ToString("f2");
-//		GUI.Box(new Rect(0f, 0f, 400f, 25f), strA);
-//	}
 
+    /// <summary>
+    /// 关闭IO线程.
+    /// </summary>
 	void CloseComThread()
 	{
-		if (ComThread != null) {
-			ComThread.Abort();
-			ComThread = null;
+		if (mComThreadIO != null) {
+			mComThreadIO.Abort();
+			mComThreadIO = null;
 		}
 	}
 
+    /// <summary>
+    /// 当程序关闭时.
+    /// </summary>
 	void OnApplicationQuit()
 	{
         Debug.Log("OnApplicationQuit...Com");
-		ComThreadClass.CloseComPort();
+        if (mComThreadClass != null)
+        {
+            mComThreadClass.CloseComPort();
+        }
         CloseComThread();
     }
 }

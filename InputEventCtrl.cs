@@ -27,7 +27,7 @@ public class InputEventCtrl : MonoBehaviour {
 			ClickStartBtOneEvent( val );
 			//pcvr.StartBtLight = StartLightState.Mie;
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 
 	public event EventHandel ClickCloseDongGanBtEvent;
@@ -37,7 +37,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickCloseDongGanBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 	
 	public event EventHandel ClickPlayerYouMenBtEvent;
@@ -47,7 +47,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickPlayerYouMenBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 
 	public event EventHandel ClickSetEnterBtEvent;
@@ -57,7 +57,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickSetEnterBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 
 	public event EventHandel ClickSetMoveBtEvent;
@@ -67,7 +67,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickSetMoveBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 
 	public event EventHandel ClickFireBtEvent;
@@ -77,7 +77,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickFireBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 	
 	public event EventHandel ClickShaCheBtEvent;
@@ -87,7 +87,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickShaCheBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 	
 	public event EventHandel ClickLaBaBtEvent;
@@ -97,7 +97,7 @@ public class InputEventCtrl : MonoBehaviour {
 		{
 			ClickLaBaBtEvent( val );
 		}
-		pcvr.SetIsPlayerActivePcvr();
+		pcvr.GetInstance().SetIsPlayerActivePcvr();
 	}
 	#endregion
 }

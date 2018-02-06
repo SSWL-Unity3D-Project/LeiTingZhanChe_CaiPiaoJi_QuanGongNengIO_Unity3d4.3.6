@@ -1,13 +1,8 @@
-﻿#define SHI_ZI_QI_NANG
-
-using UnityEngine;
-using System.Collections;
-using System;
+﻿using UnityEngine;
 
 public class pcvr : MonoBehaviour
 {
     static public bool bIsHardWare = true;
-	static public bool IsTestGame = false;
     /// <summary>
     /// 继电器命令.
     /// </summary>
@@ -25,6 +20,7 @@ public class pcvr : MonoBehaviour
     /// </summary>
     public enum CaiPiaoPrintState
     {
+        Null = -1,
         WuXiao = 0x00,
         Succeed = 0x55,
         Failed = 0xaa,
@@ -53,15 +49,15 @@ public class pcvr : MonoBehaviour
     CaiPiaoPrintState[] CaiPiaoJiPrintStArray = new CaiPiaoPrintState[2];
     //public static uint ShaCheCurPcvr;
     //static bool IsClickLaBaBt;
-    static public uint gOldCoinNum = 0;
-	static private uint mOldCoinNum = 0;
-	public int CoinNumCurrent = 0;
-	static public bool IsCloseDongGanBtDown = false;
+ //   static public uint gOldCoinNum = 0;
+	//static private uint mOldCoinNum = 0;
+	//public int CoinNumCurrent = 0;
+	//static public bool IsCloseDongGanBtDown = false;
 	//static public bool bPlayerStartKeyDown = false;
-	private bool bSetEnterKeyDown = false;
-	static public bool bSetMoveKeyDown = false;
-	public static bool IsZhenDongFangXiangPan;
-	int SubCoinNum = 0;
+	//private bool bSetEnterKeyDown = false;
+	//static public bool bSetMoveKeyDown = false;
+	//public static bool IsZhenDongFangXiangPan;
+	//int SubCoinNum = 0;
 	//public static bool m_IsOpneForwardQinang = false;
 	//public static bool m_IsOpneBehindQinang = false;
 	//public static bool m_IsOpneLeftQinang = false;
@@ -70,11 +66,11 @@ public class pcvr : MonoBehaviour
 	//public static bool m_IsOpneQinang2 = false;
 	//public static bool m_IsOpneQinang3 = false;
 	//public static bool m_IsOpneQinang4 = false;
-	public static uint SteerValMax = 999999;
-	public static uint SteerValCen = 1765;
-	public static uint SteerValMin = 0;
-	public static uint SteerValCur;
-	public static float mGetSteer = 0f;
+	//public static uint SteerValMax = 999999;
+	//public static uint SteerValCen = 1765;
+	//public static uint SteerValMin = 0;
+	//public static uint SteerValCur;
+	//public static float mGetSteer = 0f;
 	//public static uint BikeShaCheCur;
 	//public static uint mBikePowerMin = 999999;
 	//public static uint mBikePowerMax = 0;
@@ -82,30 +78,30 @@ public class pcvr : MonoBehaviour
 	//static uint BikePowerLen = 0;
 	//public static uint BikePowerCur;
 	//public static uint BikePowerOld;
-	bool bIsJiaoYanBikeValue = false;
-	static bool IsInitYouMenJiaoZhun = false;
+	//bool bIsJiaoYanBikeValue = false;
+	//static bool IsInitYouMenJiaoZhun = false;
 	//bool IsJiaoZhunFireBt;
 	//bool IsFanZhuangYouMen;
-	static bool IsInitFangXiangJiaoZhun;
-	bool IsFanZhuangFangXiang;
-	int FangXiangJiaoZhunCount;
-	public static uint CoinCurPcvr;
+	//static bool IsInitFangXiangJiaoZhun;
+	//bool IsFanZhuangFangXiang;
+	//int FangXiangJiaoZhunCount;
+	//public static uint CoinCurPcvr;
 	//public static uint BikePowerCurPcvr;
 	//public static StartLightState StartBtLight = StartLightState.Mie;
 	//public static StartLightState DongGanBtLight = StartLightState.Mie;
 	bool IsCleanHidCoin;
 	bool[] IsCleanHidCoinArray = new bool[4];
-    static uint BikeDirLenA;
-	static uint BikeDirLenB;
-	static uint BikeDirLenC;
-	static uint BikeDirLenD;
+ //   static uint BikeDirLenA;
+	//static uint BikeDirLenB;
+	//static uint BikeDirLenC;
+	//static uint BikeDirLenD;
 	//public static bool IsActiveSheCheEvent;
 	//static bool IsInitShaCheJiaoZhun;
 	//static bool IsFanZhuangShaChe;
 	//static uint mBikeShaCheMin = 999999;
 	//static uint mBikeShaCheMax = 0;
 	//static uint BikeShaCheLen = 1;
-	bool IsPlayFangXiangPanZhenDong;
+	//bool IsPlayFangXiangPanZhenDong;
 	static private pcvr Instance = null;
 	static public pcvr GetInstance()
 	{
@@ -116,120 +112,80 @@ public class pcvr : MonoBehaviour
 			if (bIsHardWare) {
 				MyCOMDevice.GetInstance();
 			}
-
-			//ScreenLog.Log("open hid***********************");
 		}
 		return Instance;
 	}
 
-	static bool IsInitFangXiangPower;
-	void InitFangXiangPowerOpen()
-	{
-		if (HardWareTest.IsTestHardWare) {
-			return;
-		}
+	//static bool IsInitFangXiangPower;
+	//void InitFangXiangPowerOpen()
+	//{
+	//	if (HardWareTest.IsTestHardWare) {
+	//		return;
+	//	}
 
-		if (IsInitFangXiangPower) {
-			return;
-		}
-		IsInitFangXiangPower = true;
-		OpenFangXiangPanPower();
-		//Debug.Log("*********");
-		Invoke("DelayCloseFangXiangPanPower", 300f);
-	}
+	//	if (IsInitFangXiangPower) {
+	//		return;
+	//	}
+	//	IsInitFangXiangPower = true;
+	//	OpenFangXiangPanPower();
+	//	//Debug.Log("*********");
+	//	Invoke("DelayCloseFangXiangPanPower", 300f);
+	//}
 
-	void DelayCloseFangXiangPanPower()
-	{
-		//Debug.Log("*********55555555555");
-		IsInitFangXiangPower = false;
-		if (Application.loadedLevel != 1) {
-			CloseFangXiangPanPower();
-		}
-	}
+	//void DelayCloseFangXiangPanPower()
+	//{
+	//	//Debug.Log("*********55555555555");
+	//	IsInitFangXiangPower = false;
+	//	if (Application.loadedLevel != 1) {
+	//		CloseFangXiangPanPower();
+	//	}
+	//}
 
 	void Start()
 	{
 		InitJiaoYanMiMa();
-
-		//FangXiangInfo
-		SteerValMin = (uint)PlayerPrefs.GetInt("mBikeDirMin");
-		SteerValCen = (uint)PlayerPrefs.GetInt("mBikeDirCen");
-		SteerValMax = (uint)PlayerPrefs.GetInt("mBikeDirMax");
-		CheckBikeDirLen();
-		
-		//YouMenInfo
-		//mBikePowerMin = (uint)PlayerPrefs.GetInt("mBikePowerMin");
-		//mBikePowerMax = (uint)PlayerPrefs.GetInt("mBikePowerMax");
-		//BikePowerLen = mBikePowerMax < mBikePowerMin ? (mBikePowerMin - mBikePowerMax + 1) : (mBikePowerMax - mBikePowerMin + 1);
-		//BikePowerLen = Math.Max(1, BikePowerLen);
-
-		//mBikeShaCheMin = (uint)PlayerPrefs.GetInt("mBikeShaCheMin");
-		//mBikeShaCheMax = (uint)PlayerPrefs.GetInt("mBikeShaCheMax");
-		//BikeShaCheLen = mBikeShaCheMax < mBikeShaCheMin ? (mBikeShaCheMin - mBikeShaCheMax + 1) : (mBikeShaCheMax - mBikeShaCheMin + 1);
-		//BikeShaCheLen = Math.Max(1, BikeShaCheLen);
-		
-		InitFangXiangPowerOpen();
 	}
 
 	void FixedUpdate()
 	{
-		if (IsTestGame  &&  Input.GetKeyUp(KeyCode.O)) {
-			IsHandleDirByKey = !IsHandleDirByKey;
-		}
-
-		//GetPcvrPowerVal();
-		GetPcvrSteerVal();
-		//GetPcvrShaCheVal();
 		if (!bIsHardWare) {
 			return;
 		}
-
-        //减币，方向有问题.
-        //机台动感有问题.
-        //CRC校验不懂.
 		SendMessage();
 		GetMessage();
 	}
 	
-	static byte ReadHead_1 = 0x53;
-	static byte ReadHead_2 = 0x57;
-    static byte EndRead_1 = 0x0d;
-    static byte EndRead_2 = 0x0a;
-    static byte WriteHead_1 = 0x09;
-	static byte WriteHead_2 = 0x05;
-	static byte WriteEnd_1 = 0x0d;
-	static byte WriteEnd_2 = 0x0a;
-	public static bool IsOpenFangXiangPanPower = true;
+	byte ReadHead_1 = 0x53;
+	byte ReadHead_2 = 0x57;
+    byte EndRead_1 = 0x0d;
+    byte EndRead_2 = 0x0a;
+    byte WriteHead_1 = 0x09;
+	byte WriteHead_2 = 0x05;
+	byte WriteEnd_1 = 0x0d;
+	byte WriteEnd_2 = 0x0a;
+	//public static bool IsOpenFangXiangPanPower = true;
 	//public static StartLightState ShaCheBtLight = StartLightState.Mie;
-	public static void OpenFangXiangPanPower()
-	{
-		IsOpenFangXiangPanPower = true;
-	}
+	//public static void OpenFangXiangPanPower()
+	//{
+	//	IsOpenFangXiangPanPower = true;
+	//}
 	
-	public static void CloseFangXiangPanPower()
-	{
-		if (IsInitFangXiangPower) {
-			return;
-		}
-		IsOpenFangXiangPanPower = false;
-	}
+	//public static void CloseFangXiangPanPower()
+	//{
+	//	if (IsInitFangXiangPower) {
+	//		return;
+	//	}
+	//	IsOpenFangXiangPanPower = false;
+	//}
 
 	void SendMessage()
 	{
-		if (!MyCOMDevice.IsFindDeviceDt) {
+		if (!MyCOMDevice.GetInstance().IsFindDeviceDt) {
 			return;
 		}
 
 		byte[] buffer = new byte[MyCOMDevice.ComThreadClass.BufLenWrite];
 		for (int i = 5; i < (MyCOMDevice.ComThreadClass.BufLenWrite - 2); i++) {
-//			if (i >= 7 && i <= 11) {
-//				continue;
-//			}
-
-//			if (i > 34 && i < 41) {
-//				//方向盘信息.
-//				continue;
-//			}
 			buffer[i] = (byte)UnityEngine.Random.Range(0x00, 0xff);
 		}
 		buffer[0] = WriteHead_1;
@@ -237,297 +193,6 @@ public class pcvr : MonoBehaviour
 		buffer[MyCOMDevice.ComThreadClass.BufLenWrite - 2] = WriteEnd_1;
 		buffer[MyCOMDevice.ComThreadClass.BufLenWrite - 1] = WriteEnd_2;
 		
-		//switch (StartBtLight) {
-		//case StartLightState.Liang:
-		//	buffer[4] |= 0x40;
-		//	break;
-			
-		//case StartLightState.Shan:
-		//	buffer[4] |= 0x40;
-		//	break;
-			
-		//case StartLightState.Mie:
-		//	buffer[4] &= 0xbf;
-		//	break;
-		//}
-		
-		//switch (ShaCheBtLight) {
-		//case StartLightState.Liang:
-		//	buffer[7] = 0xaa;
-		//	break;
-			
-		//case StartLightState.Shan:
-		//	buffer[7] = 0x55;
-		//	break;
-			
-		//case StartLightState.Mie:
-		//	buffer[7] = 0x00;
-		//	break;
-		//}
-
-		//if (TouBiInfoCtrl.IsCloseDongGan || TouBiInfoCtrl.IsCloseQiNang) {
-		//	buffer[4] <<= 4;
-		//}
-		//else {
-			/*
-0	气囊1：充气1、放气0	（快艇气囊1）		0x01	0xFE
-1	气囊2：充气1、放气0	（快艇气囊2）		0x02	0xFD
-2	气囊3：充气1、放气0	（快艇气囊3）		0x04	0xFB
-3	气囊4：充气1、放气0	（快艇气囊4）		0x08	0xF7
-
-1    2
-
-4    3
-			 */
-
-            /*
-十字型气囊            
-             
-        1
-    4       2
-		3
-
-             */
-
-//#if SHI_ZI_QI_NANG
-
-     //       if (!HardWareTest.IsTestHardWare || HardWareTest.m_IsHitshake)
-     //       {
-     //           if (SetPanel.IsOpenSetPanel)
-     //           {
-     //               if (m_IsOpneForwardQinang)
-     //               {
-     //                   buffer[4] |= 0x01;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xfe;
-     //               }
-
-					//if (m_IsOpneRightQinang)
-					//{
-					//	buffer[4] |= 0x02;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xfd;
-     //               }
-
-					//if (m_IsOpneBehindQinang)
-     //               {
-     //                   buffer[4] |= 0x04;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xfb;
-     //               }
-
-					//if (m_IsOpneLeftQinang)
-     //               {
-     //                   buffer[4] |= 0x08;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xf7;
-     //               }
-
-     //           }
-     //           else
-     //           {
-     //               if (m_IsOpneForwardQinang)
-     //               {
-     //                   buffer[4] |= 0x01;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xfe;
-     //               }
-
-					//if (m_IsOpneRightQinang)
-					//{
-					//	buffer[4] |= 0x02;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xfd;
-     //               }
-
-					//if (m_IsOpneBehindQinang)
-     //               {
-     //                   buffer[4] |= 0x04;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xfb;
-     //               }
-
-					//if (m_IsOpneLeftQinang)
-     //               {
-     //                   buffer[4] |= 0x08;
-     //               }
-     //               else
-     //               {
-     //                   buffer[4] &= 0xf7;
-     //               }
-     //           }
-     //       }
-     //       else
-     //       {
-     //           if (m_IsOpneQinang1)
-     //           {
-     //               buffer[4] |= 0x01;
-     //           }
-     //           else
-     //           {
-     //               buffer[4] &= 0xfe;
-     //           }
-
-     //           if (m_IsOpneQinang2)
-     //           {
-     //               buffer[4] |= 0x02;
-     //           }
-     //           else
-     //           {
-     //               buffer[4] &= 0xfd;
-     //           }
-
-     //           if (m_IsOpneQinang3)
-     //           {
-     //               buffer[4] |= 0x04;
-     //           }
-     //           else
-     //           {
-     //               buffer[4] &= 0xfb;
-     //           }
-
-     //           if (m_IsOpneQinang4)
-     //           {
-     //               buffer[4] |= 0x08;
-     //           }
-     //           else
-     //           {
-     //               buffer[4] &= 0xf7;
-     //           }
-     //       }
-
-//#else
-//            if (!HardWareTest.IsTestHardWare || HardWareTest.m_IsHitshake) {
-//				if (SetPanel.IsOpenSetPanel) {
-//					if (m_IsOpneForwardQinang) {
-//						buffer[4] |=  0x01;
-//					}
-//					else {
-//						buffer[4] &=  0xfe;
-//					}
-					
-//					if (m_IsOpneBehindQinang) {
-//						buffer[4] |=  0x02;
-//					}
-//					else {
-//						buffer[4] &=  0xfd;
-//					}
-					
-//					if (m_IsOpneLeftQinang) {
-//						buffer[4] |=  0x04;
-//					}
-//					else {
-//						buffer[4] &=  0xfb;
-//					}
-					
-//					if (m_IsOpneRightQinang) {
-//						buffer[4] |=  0x08;
-//					}
-//					else {
-//						buffer[4] &=  0xf7;
-//					}
-//				}
-//				else {
-//					if (m_IsOpneForwardQinang) {
-//						buffer[4] |=  0x01;
-//						buffer[4] |=  0x02;
-//					}
-//					else {
-//						buffer[4] &=  0xfe;
-//						buffer[4] &=  0xfd;
-//					}
-					
-//					if (m_IsOpneBehindQinang) {
-//						buffer[4] |=  0x04;
-//						buffer[4] |=  0x08;
-//					}
-//					else {
-//						buffer[4] &=  0xfb;
-//						buffer[4] &=  0xf7;
-//					}
-					
-//					if (m_IsOpneLeftQinang) {
-//						buffer[4] |=  0x01;
-//						buffer[4] |=  0x08;
-//					}
-//					else {
-//						if (!m_IsOpneForwardQinang) {
-//							buffer[4] &=  0xfe;
-//							buffer[4] &=  0xf7;
-//						}
-//					}
-					
-//					if (m_IsOpneRightQinang) {
-//						buffer[4] |=  0x02;
-//						buffer[4] |=  0x04;
-//					}
-//					else {
-//						if (!m_IsOpneForwardQinang) {
-//							buffer[4] &=  0xfd;
-//							buffer[4] &=  0xfb;
-//						}
-//					}
-//				}
-//			}
-//			else {
-				
-//				if (m_IsOpneQinang1) {
-//					buffer[4] |=  0x01;
-//				}
-//				else {
-//					buffer[4] &=  0xfe;
-//				}
-				
-//				if (m_IsOpneQinang2) {
-//					buffer[4] |=  0x02;
-//				}
-//				else {
-//					buffer[4] &=  0xfd;
-//				}
-				
-//				if (m_IsOpneQinang3) {
-//					buffer[4] |=  0x04;
-//				}
-//				else {
-//					buffer[4] &=  0xfb;
-//				}
-				
-//				if (m_IsOpneQinang4) {
-//					buffer[4] |=  0x08;
-//				}
-//				else {
-//					buffer[4] &=  0xf7;
-//				}
-//			}
-//#endif
-        //}
-
-		//if (IsZhenDongFangXiangPan) {
-		//	buffer[6] = 0x55;
-		//}
-		//else {
-		//	if (IsOpenFangXiangPanPower) {
-		//		buffer[6] = 0xaa;
-		//	}
-		//	else {
-		//		buffer[6] = 0x00;
-		//	}
-		//}
-        
         //减币控制.
         if (!IsCleanHidCoinArray[0] && !IsCleanHidCoinArray[1] && !IsCleanHidCoinArray[2] && !IsCleanHidCoinArray[3])
         {
@@ -569,26 +234,6 @@ public class pcvr : MonoBehaviour
                 }
             }
         }
-
-  //      if (IsCleanHidCoin) {
-		//	buffer[4] = 0x04;
-		//	buffer[2] = 0x01;
-		//	buffer[3] = 0x10;
-		//	if (CoinCurPcvr == 0) {
-		//		IsCleanHidCoin = false;
-		//	}
-		//}
-		//else {
-		//	buffer[4] = 0x00;
-		//}
-
-		//FangXiangPanInfo
-//		buffer[35] = FangXiangPanL_1;
-//		buffer[36] = FangXiangPanL_2;
-//		buffer[37] = FangXiangPanR_1;
-//		buffer[38] = FangXiangPanR_2;
-//		buffer[39] = FangXiangPanM_1;
-//		buffer[40] = FangXiangPanM_2;
 
 		if (IsJiaoYanHid) {
 			//for (int i = 0; i < 4; i++) {
@@ -761,51 +406,7 @@ public class pcvr : MonoBehaviour
         }
         MyCOMDevice.ComThreadClass.WriteByteMsg = buffer;
     }
-
-
-    /*
     
-#define User_KEY_2_Data_Buff	User_Usart_1_Tx_Buffer[27]
-#define User_KEY_2_Rand_Buff	User_Usart_1_Tx_Buffer[15]
-
-void User_KEY_2_Handle(void)			//coin 4 key 
-{
-	User_Key_RandData=(u8)(rand()%254+1);	
-	
-		if((User_Key_RandData&0x08)==0x08)		//      3
-			{
-				User_KEY_2_Rand_Buff=(u8)(rand()%254+1);
-				User_KEY_2_Rand_Buff|=0x04;	    
-				User_KEY_2_Rand_Buff&=0xef;					
-				User_KEY_2_Data_Buff=(u8)(rand()%254+1);
-					if(User_4P_Coin_Key_Real_State==0x0)	//°′??
-					{
-						User_KEY_2_Data_Buff&=0xdf;
-					}
-					else																	//μˉ?e
-					{
-						User_KEY_2_Data_Buff|=0x20;
-					}
-			}
-		else                                    //5
-			{
-				User_KEY_2_Rand_Buff=(u8)(rand()%254+1);
-				User_KEY_2_Rand_Buff|=0x10;	
-				User_KEY_2_Rand_Buff&=0xfb;				//°′?üóDD§???aμú????
-				User_KEY_2_Data_Buff=(u8)(rand()%254+1);
-					if(User_4P_Coin_Key_Real_State==0x0)	//°′??
-					{
-						User_KEY_2_Data_Buff&=0xbf;
-					}
-					else																	//μˉ?e
-					{
-						User_KEY_2_Data_Buff|=0x40;
-					}
-			}
-	User_Key_RandData=(u8)(rand()%254+1);
-}
-     */
-
     enum LedIndexEnum
     {
         Null = 0,
@@ -1016,21 +617,14 @@ void User_KEY_2_Handle(void)			//coin 4 key
 		JiaoYanState = val;
 		//Debug.Log("*****JiaoYanState "+JiaoYanState);
 
-		if (JiaoYanFailedCount >= JiaoYanFailedMax || IsJiOuJiaoYanFailed) {
-			//JiaoYanFailed
-			if (IsJiOuJiaoYanFailed) {
-				//JiOuJiaoYanFailed
-				//Debug.Log("JOJYSB...");
-			}
-			else {
-				//JiaMiXinPianJiaoYanFailed
-				//Debug.Log("JMXPJYSB...");
-				IsJiaMiJiaoYanFailed = true;
-			}
-		}
+		if (JiaoYanFailedCount >= JiaoYanFailedMax) {
+            //加密校验失败.
+            //Debug.Log("JMXPJYSB...");
+            IsJiaMiJiaoYanFailed = true;
+        }
 	}
-	public static bool IsJiaMiJiaoYanFailed;
-	
+
+    bool IsJiaMiJiaoYanFailed;
 	enum JIAOYANENUM
 	{
 		NULL,
@@ -1076,57 +670,47 @@ void User_KEY_2_Handle(void)			//coin 4 key
 		}
 	}
 
-	public static bool IsJiaoYanHid;
-	public static int CountFXZD;
-	public static int CountQNZD;
-	public void OpenFangXiangPanZhenDong()
-	{
-		if (IsPlayFangXiangPanZhenDong) {
-			return;
-		}
-		IsPlayFangXiangPanZhenDong = true;
-		CountFXZD++;
-		//Debug.Log("OpenFangXiangPanZhenDong -> CountFXZD "+CountFXZD+", CountQNZD "+CountQNZD);
-		StartCoroutine(PlayFangXiangPanZhenDong());
-	}
+    /// <summary>
+    /// 是否校验hid.
+    /// </summary>
+	static public bool IsJiaoYanHid;
+	//public static int CountFXZD;
+	//public static int CountQNZD;
+	//public void OpenFangXiangPanZhenDong()
+	//{
+	//	if (IsPlayFangXiangPanZhenDong) {
+	//		return;
+	//	}
+	//	IsPlayFangXiangPanZhenDong = true;
+	//	CountFXZD++;
+	//	//Debug.Log("OpenFangXiangPanZhenDong -> CountFXZD "+CountFXZD+", CountQNZD "+CountQNZD);
+	//	StartCoroutine(PlayFangXiangPanZhenDong());
+	//}
 
-	public static bool IsSlowLoopCom = false;
-	IEnumerator PlayFangXiangPanZhenDong()
-	{
-		int count = UnityEngine.Random.Range(1, 4);
-		//count = 1; //test
-		do {
-			IsZhenDongFangXiangPan = !IsZhenDongFangXiangPan;
-			count--;
-			yield return new WaitForSeconds(0.05f);
-		} while (count > -1);
-		IsZhenDongFangXiangPan = false;
-		//IsZhenDongFangXiangPan = true; //test
-		IsPlayFangXiangPanZhenDong = false;
-	}
+	//public static bool IsSlowLoopCom = false;
+	//IEnumerator PlayFangXiangPanZhenDong()
+	//{
+	//	int count = UnityEngine.Random.Range(1, 4);
+	//	//count = 1; //test
+	//	do {
+	//		IsZhenDongFangXiangPan = !IsZhenDongFangXiangPan;
+	//		count--;
+	//		yield return new WaitForSeconds(0.05f);
+	//	} while (count > -1);
+	//	IsZhenDongFangXiangPan = false;
+	//	//IsZhenDongFangXiangPan = true; //test
+	//	IsPlayFangXiangPanZhenDong = false;
+	//}
 
-	byte JiOuJiaoYanCount;
-	byte JiOuJiaoYanMax = 5;
-	public static bool IsJiOuJiaoYanFailed;
-	public void GetMessage()
+    /// <summary>
+    /// 获取IO板的信息.
+    /// </summary>
+	void GetMessage()
 	{
         if (CheckGetMsgInfoIsError(MyCOMDevice.ComThreadClass.ReadByteMsg))
         {
             return;
         }
-
-		//if (IsJiOuJiaoYanFailed) {
-		//	return;
-		//}
-
-		//if ((MyCOMDevice.ComThreadClass.ReadByteMsg[22]&0x01) == 0x01) {
-		//	JiOuJiaoYanCount++;
-		//	if (JiOuJiaoYanCount >= JiOuJiaoYanMax && !IsJiOuJiaoYanFailed) {
-		//		IsJiOuJiaoYanFailed = true;
-		//		//JiOuJiaoYanFailed
-		//	}
-		//}
-		//IsJiOuJiaoYanFailed = true; //test
 
 		//byte tmpVal = 0x00;
 		//string testA = "";
@@ -1229,501 +813,14 @@ void User_KEY_2_Handle(void)			//coin 4 key
 		//}
 
 		CheckIsPlayerActivePcvr();
-        //int len = MyCOMDevice.ComThreadClass.ReadByteMsg.Length;
-        //uint[] readMsg = new uint[len];
-        //for (int i = 0; i < len; i++)
-        //{
-        //    readMsg[i] = MyCOMDevice.ComThreadClass.ReadByteMsg[i];
-        //}
         KeyProcess(MyCOMDevice.ComThreadClass.ReadByteMsg);
 	}
 
-	void CheckBikeDirLen()
-	{
-		BikeDirLenA = SteerValMin - SteerValCen + 1;
-		BikeDirLenB = SteerValCen - SteerValMax + 1;
-		BikeDirLenC = SteerValMax - SteerValCen + 1;
-		BikeDirLenD = SteerValCen - SteerValMin + 1;
-	}
-
-	static bool IsHandleDirByKey = true;
-	public static void GetPcvrSteerVal()
-	{
-		if (!IsHandleDirByKey) {
-			if (!bIsHardWare) {
-				mGetSteer = Input.GetAxis("Horizontal");
-				return;
-			}
-		}
-		else {
-			if (!bIsHardWare || IsTestGame) {
-				mGetSteer = Input.GetAxis("Horizontal");
-				return;
-			}
-		}
-
-		if (!MyCOMDevice.IsFindDeviceDt) {
-			return;
-		}
-
-		if (IsInitFangXiangJiaoZhun) {
-			return;
-		}
-
-		uint bikeDir = SteerValCur;
-		uint bikeDirLen = SteerValMax - SteerValMin + 1;
-		if (SteerValMax < SteerValMin) {
-			bikeDirLen = bikeDir > SteerValCen ? BikeDirLenA : BikeDirLenB;
-			bikeDir = Math.Min(bikeDir, SteerValMin);
-			bikeDir = Math.Max(bikeDir, SteerValMax);
-		}
-		else {
-			bikeDirLen = bikeDir > SteerValCen ? BikeDirLenC : BikeDirLenD;
-			bikeDir = Math.Max(bikeDir, SteerValMin);
-			bikeDir = Math.Min(bikeDir, SteerValMax);
-		}
-		bikeDirLen = Math.Max(1, bikeDirLen);
-		
-		uint bikeDirCur = SteerValMax - bikeDir;
-		float bikeDirPer = (float)bikeDirCur / bikeDirLen;
-		if (SteerValMax > SteerValMin) {
-			//ZhengJie FangXiangDianWeiQi
-			if (bikeDir > SteerValCen) {
-				bikeDirCur = bikeDir - SteerValCen;
-				bikeDirPer = (float)bikeDirCur / bikeDirLen;
-			}
-			else {
-				bikeDirCur = SteerValCen - bikeDir;
-				bikeDirPer = - (float)bikeDirCur / bikeDirLen;
-			}
-		}
-		else {
-			//FanJie DianWeiQi
-			if(bikeDir > SteerValCen) {
-				bikeDirCur = bikeDir - SteerValCen;
-				bikeDirPer = - (float)bikeDirCur / bikeDirLen;
-			}
-			else {
-				bikeDirCur = SteerValCen - bikeDir;
-				bikeDirPer = (float)bikeDirCur / bikeDirLen;
-			}
-		}
-		mGetSteer = bikeDirPer;
-		//Debug.Log("*** mGetSteer "+mGetSteer+", SteerValMax "+SteerValMax+", SteerValMin "+SteerValMin+", bikeDirCur "+bikeDirCur);
-	}
-
-	//static float TimePowerLast;
-	//static float TimePowerMax = 3f;
-	//static float PowerLastVal;
-	static bool IsAddSpeed;
-    //public static void GetPcvrPowerVal()
-    //{
-    //	//if (!bIsHardWare) {
-    //	if (!bIsHardWare || IsTestGame) {
-    //		float valVer = Input.GetAxis("Vertical");
-    //		float powerTmp = 0f;
-    //		if (valVer > 0f) {
-    //			if (!IsAddSpeed) {
-    //				IsAddSpeed = true;
-    //				TimePowerLast = Time.realtimeSinceStartup;
-    //			}
-
-    //			if (Time.realtimeSinceStartup - TimePowerLast < TimePowerMax) {
-    //				powerTmp = (Time.realtimeSinceStartup - TimePowerLast) / TimePowerMax;
-    //			}
-    //			else {
-    //				powerTmp = 1f;
-    //			}
-    //		}
-    //		else {
-    //			if (IsAddSpeed) {
-    //				IsAddSpeed = false;
-    //				PowerLastVal = mGetPower;
-    //				TimePowerLast = Time.realtimeSinceStartup;
-    //			}
-
-    //			if (Time.realtimeSinceStartup - TimePowerLast < TimePowerMax && mGetPower > 0f) {
-    //				powerTmp = (Time.realtimeSinceStartup - TimePowerLast) / TimePowerMax;
-    //				powerTmp = PowerLastVal > powerTmp ? (PowerLastVal - powerTmp) : 0f;
-    //			}
-    //			else {
-    //				powerTmp = 0f;
-    //			}
-    //		}
-    //		powerTmp = powerTmp <= YouMemnMinVal ? 0f : powerTmp;
-    //		mGetPower = powerTmp;
-    //		return;
-    //	}
-
-    //	if (!MyCOMDevice.IsFindDeviceDt) {
-    //		return;
-    //	}
-
-    //	if (IsInitYouMenJiaoZhun) {
-    //		return;
-    //	}
-
-    //	uint bikePowerCurValTmp = 0;
-    //	if (mBikePowerMin > mBikePowerMax) {
-    //		bikePowerCurValTmp = Math.Min(BikePowerCur, mBikePowerMin);
-    //		bikePowerCurValTmp = Math.Max(bikePowerCurValTmp, mBikePowerMax);
-    //	}
-    //	else {
-    //		bikePowerCurValTmp = Math.Max(BikePowerCur, mBikePowerMin);
-    //		bikePowerCurValTmp = Math.Min(bikePowerCurValTmp, mBikePowerMax);
-    //	}
-
-    //	uint bikePowerDis = mBikePowerMin > mBikePowerMax ? (mBikePowerMin - bikePowerCurValTmp) : (bikePowerCurValTmp - mBikePowerMin);
-    //	float valThrottleTmp = (float)bikePowerDis / BikePowerLen;
-    //	valThrottleTmp = valThrottleTmp <= YouMemnMinVal ? 0f : valThrottleTmp;
-    //	valThrottleTmp = valThrottleTmp > 1f ? 1f : valThrottleTmp;
-    //	mGetPower = valThrottleTmp;
-
-    //		if (IsTestGame) {
-    //			mGetPower = 1f; //test
-    //		}
-    //}
-    //public static float YouMemnMinVal = 0.1f;
-
-    //public static void GetPcvrShaCheVal()
-    //{
-    //	if (!bIsHardWare) {
-    //		return;
-    //	}
-
-    //	if (!MyCOMDevice.IsFindDeviceDt) {
-    //		return;
-    //	}
-
-    //	if (IsInitShaCheJiaoZhun) {
-    //		return;
-    //	}
-
-    //	uint bikeShaCheCurValTmp = 0;
-    //	if (mBikeShaCheMin > mBikeShaCheMax) {
-    //		bikeShaCheCurValTmp = Math.Min(BikeShaCheCur, mBikeShaCheMin);
-    //		bikeShaCheCurValTmp = Math.Max(bikeShaCheCurValTmp, mBikeShaCheMax);
-    //	}
-    //	else {
-    //		bikeShaCheCurValTmp = Math.Max(BikeShaCheCur, mBikeShaCheMin);
-    //		bikeShaCheCurValTmp = Math.Min(bikeShaCheCurValTmp, mBikeShaCheMax);
-    //	}
-
-    //	uint bikeShaCheDis = mBikeShaCheMin > mBikeShaCheMax ? (mBikeShaCheMin - bikeShaCheCurValTmp) : (bikeShaCheCurValTmp - mBikeShaCheMin);
-    //	float valTmp = (float)bikeShaCheDis / BikeShaCheLen;
-    //	valTmp = valTmp <= 0.3f ? 0f : 1f;
-    //	if (IsTestGame) {
-    //		return; //test
-    //	}
-
-    //		if (!IsActiveSheCheEvent && valTmp > 0.3f) {
-    //			IsActiveSheCheEvent = true;
-    //			InputEventCtrl.GetInstance().ClickShaCheBt( ButtonState.DOWN );
-    //		}
-    //		else if (IsActiveSheCheEvent && valTmp < 0.3f){
-    //			IsActiveSheCheEvent = false;
-    //			InputEventCtrl.GetInstance().ClickShaCheBt( ButtonState.UP );
-    //		}
-    //}
-
-    int[] PlayerCoinHidArray = new int[4];
-    [HideInInspector]
-    public int[] PlayerCoinArray = new int[4];
-    public void SubPlayerCoin(int subNum, PlayerCoinEnum indexPlayer)
-	{
-        int indexVal = (int)indexPlayer;
-        if (PlayerCoinArray[indexVal] > subNum)
-        {
-            PlayerCoinArray[indexVal] -= subNum;
-        }
-	}
-	
-	//public void InitYouMenJiaoZhun()
-	//{
-	//	if (IsInitYouMenJiaoZhun) {
-	//		return;
-	//	}
-	//	//ScreenLog.Log("pcvr -> InitYouMenJiaoZhun...");
-	//	mBikePowerMin = 999999;
-	//	mBikePowerMax = 0;
-		
-	//	IsJiaoZhunFireBt = false;
-	//	IsInitYouMenJiaoZhun = true;
-	//}
-	
-	//void ResetYouMenJiaoZhun()
-	//{
-	//	if (!IsInitYouMenJiaoZhun) {
-	//		return;
-	//	}
-	//	//ScreenLog.Log("pcvr -> ResetYouMenJiaoZhun...");
-	//	IsJiaoZhunFireBt = false;
-	//	IsInitYouMenJiaoZhun = false;
-	//	bIsJiaoYanBikeValue = false;
-		
-	//	uint TmpVal = 0;
-	//	if (IsFanZhuangYouMen) {
-	//		TmpVal = mBikePowerMax;
-	//		mBikePowerMax = mBikePowerMin;
-	//		mBikePowerMin = TmpVal;
-	//		BikePowerLen = mBikePowerMin - mBikePowerMax + 1;
-	//		//ScreenLog.Log("YouMenFanZhuang -> mBikePowerMax = " + mBikePowerMax + ", mBikePowerMin = " + mBikePowerMin);
-	//	}
-	//	else {
-	//		BikePowerLen = mBikePowerMax - mBikePowerMin + 1;
-	//		//ScreenLog.Log("YouMenZhengZhuang -> mBikePowerMax = " + mBikePowerMax + ", mBikePowerMin = " + mBikePowerMin);
-	//	}
-	//	BikePowerLen = Math.Max(1, BikePowerLen);
-
-	//	PlayerPrefs.SetInt("mBikePowerMax", (int)mBikePowerMax);
-	//	PlayerPrefs.SetInt("mBikePowerMin", (int)mBikePowerMin);
-	//}
-
-	//public void InitShaCheJiaoZhun()
-	//{
-	//	if (IsInitShaCheJiaoZhun) {
-	//		return;
-	//	}
-	//	mBikeShaCheMin = 999999;
-	//	mBikeShaCheMax = 0;
-	//	IsJiaoZhunFireBt = false;
-	//	IsInitShaCheJiaoZhun = true;
-	//}
-
-	//void ResetShaCheJiaoZhun()
-	//{
-	//	if (!IsInitShaCheJiaoZhun) {
-	//		return;
-	//	}
-	//	IsJiaoZhunFireBt = false;
-	//	IsInitShaCheJiaoZhun = false;
-	//	bIsJiaoYanBikeValue = false;
-		
-	//	uint TmpVal = 0;
-	//	if (IsFanZhuangShaChe) {
-	//		TmpVal = mBikeShaCheMax;
-	//		mBikeShaCheMax = mBikeShaCheMin;
-	//		mBikeShaCheMin = TmpVal;
-	//		BikeShaCheLen = mBikeShaCheMin - mBikeShaCheMax + 1;
-	//	}
-	//	else {
-	//		BikeShaCheLen = mBikeShaCheMax - mBikeShaCheMin + 1;
-	//	}
-	//	BikeShaCheLen = Math.Max(1, BikeShaCheLen);
-
-	//	PlayerPrefs.SetInt("mBikeShaCheMax", (int)mBikeShaCheMax);
-	//	PlayerPrefs.SetInt("mBikeShaCheMin", (int)mBikeShaCheMin);
-	//}
-
-	public void InitFangXiangJiaoZhun()
-	{
-		if (IsInitFangXiangJiaoZhun) {
-			return;
-		}
-		//ScreenLog.Log("pcvr -> InitFangXiangJiaoZhun...");
-		//FangXiangInfo
-		SteerValMin = 999999;
-		SteerValCen = 1765;
-		SteerValMax = 0;
-		
-		//IsJiaoZhunFireBt = false;
-		FangXiangJiaoZhunCount = 0;
-		IsInitFangXiangJiaoZhun = true;
-		bIsJiaoYanBikeValue = true;
-	}
-	
-	void ResetFangXiangJiaoZhun()
-	{
-		if (!IsInitFangXiangJiaoZhun) {
-			return;
-		}
-		//ScreenLog.Log("pcvr -> ResetFangXiangJiaoZhun...");
-		//IsJiaoZhunFireBt = false;
-		FangXiangJiaoZhunCount = 0;
-		IsInitFangXiangJiaoZhun = false;
-		
-		uint TmpVal = 0;
-		if (IsFanZhuangFangXiang) {
-			TmpVal = SteerValMax;
-			SteerValMax = SteerValMin;
-			SteerValMin = TmpVal;
-			//ScreenLog.Log("CheTouFangXiangFanZhuan -> SteerValMin " + SteerValMin + ", SteerValMax " +SteerValMax);
-		}
-		else {
-			//ScreenLog.Log("CheTouFangXiangZhengZhuan -> SteerValMin " + SteerValMin + ", SteerValMax " +SteerValMax);
-		}
-		CheckBikeDirLen();
-		PlayerPrefs.SetInt("mBikeDirMin", (int)SteerValMin);
-		PlayerPrefs.SetInt("mBikeDirCen", (int)SteerValCen);
-		PlayerPrefs.SetInt("mBikeDirMax", (int)SteerValMax);
-	}
-
-	//void ShaCheJiaoZhun()
-	//{
-	//	if (!IsInitShaCheJiaoZhun) {
-	//		return;
-	//	}
-		
-	//	if (BikeShaCheCur < mBikeShaCheMin) {
-	//		mBikeShaCheMin = BikeShaCheCur;
-	//		PlayerPrefs.SetInt("mBikeShaCheMin", (int)mBikeShaCheMin);
-	//	}
-		
-	//	if (BikeShaCheCur > mBikeShaCheMax) {
-	//		mBikeShaCheMax = BikeShaCheCur;
-	//		PlayerPrefs.SetInt("mBikeShaCheMax", (int)mBikeShaCheMax);
-	//	}
-		
-	//	if (bPlayerStartKeyDown && !IsJiaoZhunFireBt) {
-	//		IsJiaoZhunFireBt = true;
-	//		uint dVal_0 = BikeShaCheCur - mBikeShaCheMin;
-	//		uint dVal_1 = mBikeShaCheMax - BikeShaCheCur;
-	//		if (dVal_0 > dVal_1) {
-	//			IsFanZhuangShaChe = false;
-	//		}
-	//		else if (dVal_0 < dVal_1) {
-	//			IsFanZhuangShaChe = true;
-	//		}
-	//		ResetShaCheJiaoZhun();
-	//	}
-	//	else if(!bPlayerStartKeyDown && IsJiaoZhunFireBt) {
-	//		IsJiaoZhunFireBt = false;
-	//	}
-	//}
-
-	//void YouMenJiaoZhun()
-	//{
-	//	if (!IsInitYouMenJiaoZhun) {
-	//		return;
-	//	}
-
-	//	if (BikePowerCur < mBikePowerMin) {
-	//		mBikePowerMin = BikePowerCur;
-	//		PlayerPrefs.SetInt("mBikePowerMin", (int)mBikePowerMin);
-	//	}
-		
-	//	if (BikePowerCur > mBikePowerMax) {
-	//		mBikePowerMax = BikePowerCur;
-	//		PlayerPrefs.SetInt("mBikePowerMax", (int)mBikePowerMax);
-	//	}
-		
-	//	if (bPlayerStartKeyDown && !IsJiaoZhunFireBt) {
-	//		IsJiaoZhunFireBt = true;
-	//		uint dVal_0 = BikePowerCur - mBikePowerMin;
-	//		uint dVal_1 = mBikePowerMax - BikePowerCur;
-	//		if (dVal_0 > dVal_1) {
-	//			//YouMenZhengZhuang
-	//			IsFanZhuangYouMen = false;
-	//		}
-	//		else if (dVal_0 < dVal_1) {
-	//			//YouMenFanZhuang
-	//			IsFanZhuangYouMen = true;
-	//		}
-	//		ResetYouMenJiaoZhun();
-	//		//InitShaCheJiaoZhun();
-	//		IsJiaoZhunFireBt = true;
-	//	}
-	//	else if(!bPlayerStartKeyDown && IsJiaoZhunFireBt) {
-	//		IsJiaoZhunFireBt = false;
-	//	}
-	//}
-
-	void FangXiangJiaoZhun()
-	{
-		if (!IsInitFangXiangJiaoZhun) {
-			return;
-		}
-		
-		//Record FangXiangInfo
-		if (SteerValCur < SteerValMin) {
-			SteerValMin = SteerValCur;
-			PlayerPrefs.SetInt("mBikeDirMin", (int)SteerValMin);
-		}
-		
-		if (SteerValCur > SteerValMax) {
-			SteerValMax = SteerValCur;
-			PlayerPrefs.SetInt("mBikeDirMax", (int)SteerValMax);
-		}
-		
-		//if (bPlayerStartKeyDown && !IsJiaoZhunFireBt) {
-			//IsJiaoZhunFireBt = true;
-		//	FangXiangJiaoZhunCount++;
-		//	switch (FangXiangJiaoZhunCount) {
-		//	case 1:
-		//		//CheTouZuoZhuan
-		//		uint dVal_0 = SteerValCur - SteerValMin;
-		//		uint dVal_1 = SteerValMax - SteerValCur;
-		//		if (dVal_0 < dVal_1) {
-		//			IsFanZhuangFangXiang = false;
-		//		}
-		//		else if (dVal_0 > dVal_1) {
-		//			IsFanZhuangFangXiang = true;
-		//		}
-		//		break;
-				
-		//	case 2:
-		//		//CheTouZhuanDaoZhongJian
-		//		SteerValCen = SteerValCur;
-		//		break;
-				
-		//	case 3:
-		//		//CheTouYouZhuan
-		//		ResetFangXiangJiaoZhun();
-		//		//InitYouMenJiaoZhun();
-		//		//IsJiaoZhunFireBt = true;
-		//		break;
-		//	}
-		//}
-		//else if(!bPlayerStartKeyDown && IsJiaoZhunFireBt) {
-		//	IsJiaoZhunFireBt = false;
-		//}
-	}
-
-	//public static uint BikeBeiYongPowerCurPcvr;
+    /// <summary>
+    /// 循环检测收到IO板的信息.
+    /// </summary>
 	void KeyProcess(byte []buffer)
-	{
-		if (!MyCOMDevice.IsFindDeviceDt) {
-			return;
-		}
-
-		if (buffer[0] != ReadHead_1 || buffer[1] != ReadHead_2) {
-			return;
-		}
-
-        //SteerValCur = (((uint)buffer[6]&0x0f) << 8) + buffer[7]; //fangXiang
-        //bool isTest = false;
-        //if (!isTest) {
-        //	BikePowerCur = (((uint)buffer[2]&0x0f) << 8) + buffer[3]; //youMen
-        //	BikePowerCurPcvr = BikePowerCur;
-
-        //	BikeShaCheCur = (((uint)buffer[4]&0x0f) << 8) + buffer[5]; //shaChe
-        //	ShaCheCurPcvr = BikeShaCheCur;
-        //}
-        //else {
-        //	BikePowerCur = SteerValCur; //test
-        //	BikeShaCheCur = SteerValCur; //test
-        //}
-
-        //if (HardWareTest.IsTestHardWare) {
-        //	uint tmpBYYouMen = (((uint)buffer[2]&0x0f) << 8) + buffer[3]; //youMen
-        //	BikeBeiYongPowerCurPcvr = tmpBYYouMen;
-        //}
-
-        //		if (!IsInitYouMenJiaoZhun) {
-        //			float dPower = BikePowerOld > BikePowerCur ? BikePowerOld - BikePowerCur : BikePowerCur - BikePowerOld;
-        //			if (mBikePowerMax > mBikePowerMin) {
-        //				if (dPower / (mBikePowerMax - mBikePowerMin) > 0.3f) {
-        //					BikePowerCur = mBikePowerMin;
-        //				}
-        //			}
-        //			else {
-        //				if (dPower / (mBikePowerMin - mBikePowerMax) > 0.3f) {
-        //					BikePowerCur = mBikePowerMax;
-        //				}
-        //			}
-        //			BikePowerOld = BikePowerCur;
-        //		}
-
+	{        
         //game coinInfo
         PlayerCoinHidArray[0] = buffer[18] & 0x0f;
         PlayerCoinHidArray[1] = (buffer[18] & 0xf0) >> 4;
@@ -1734,228 +831,34 @@ void User_KEY_2_Handle(void)			//coin 4 key
         CheckPlayerCoinInfo(PlayerCoinEnum.player03);
         CheckPlayerCoinInfo(PlayerCoinEnum.player04);
 
-		if (bIsJiaoYanBikeValue) {
-			FangXiangJiaoZhun();
-			//YouMenJiaoZhun();
-			//ShaCheJiaoZhun();
-		}
-
+        UpdateDianWeiQiDt(buffer);
+        
         CaiPiaoPrintState caiPiaoPrintSt01 = (CaiPiaoPrintState)buffer[44];
         //CaiPiaoPrintState caiPiaoPrintSt02 = (CaiPiaoPrintState)buffer[44];
         OnReceiveCaiPiaoJiPrintState(caiPiaoPrintSt01, CaiPiaoJi.Num01);
         //CheckCaiPiaoJiPrintState(caiPiaoPrintSt02, CaiPiaoJi.Num02);
-
-        //按键1 - 动感控制开关
-        //if (buffer[21] == 0x00 || buffer[21] == 0xff)
-        //{
-        //}
-        //else
-        //{
-        //    if (buffer[20] == 0x00 || buffer[20] == 0xff)
-        //    {
-        //    }
-        //    else
-        //    {
-        //        if ((buffer[21] & 0x10) == 0x10)
-        //        {
-        //            if (IsCloseDongGanBtDown && (buffer[20] & 0x04) == 0x04)
-        //            {
-        //                //按键弹起.
-        //                //ScreenLog.Log("dongGanBt up!");
-        //                IsCloseDongGanBtDown = false;
-        //                //InputEventCtrl.GetInstance().ClickCloseDongGanBt(ButtonState.UP);
-        //            }
-        //            else if (!IsCloseDongGanBtDown && (buffer[20] & 0x04) == 0x00)
-        //            {
-        //                //按键按下.
-        //                //ScreenLog.Log("dongGanBt down!");
-        //                IsCloseDongGanBtDown = true;
-        //                //InputEventCtrl.GetInstance().ClickCloseDongGanBt(ButtonState.DOWN);
-        //            }
-        //        }
-        //        else if ((buffer[21] & 0x40) == 0x40)
-        //        {
-        //            if (IsCloseDongGanBtDown && (buffer[20] & 0x10) == 0x10)
-        //            {
-        //                //按键弹起.
-        //                //ScreenLog.Log("dongGanBt up!");
-        //                IsCloseDongGanBtDown = false;
-        //                //InputEventCtrl.GetInstance().ClickCloseDongGanBt(ButtonState.UP);
-        //            }
-        //            else if (!IsCloseDongGanBtDown && (buffer[20] & 0x10) == 0x00)
-        //            {
-        //                //按键按下.
-        //                //ScreenLog.Log("dongGanBt down!");
-        //                IsCloseDongGanBtDown = true;
-        //                //InputEventCtrl.GetInstance().ClickCloseDongGanBt(ButtonState.DOWN);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //		if ( !IsCloseDongGanBtDown && 0x02 == (buffer[9]&0x02) ) {
-        ////			ScreenLog.Log("game DongGanBt down!");
-        //			IsCloseDongGanBtDown = true;
-        //			InputEventCtrl.GetInstance().ClickCloseDongGanBt( ButtonState.DOWN );
-        //		}
-        //		else if ( IsCloseDongGanBtDown && 0x00 == (buffer[9]&0x02) ) {
-        ////			ScreenLog.Log("game DongGanBt up!");
-        //			IsCloseDongGanBtDown = false;
-        //			InputEventCtrl.GetInstance().ClickCloseDongGanBt( ButtonState.UP );
-        //		}
-
-        //if ( !bPlayerStartKeyDown && 0x01 == (buffer[28]&0x01) ) { //test
-        //		if ( !bPlayerStartKeyDown && 0x01 == (buffer[9]&0x01) ) {
-        ////			ScreenLog.Log("game startBt down!");
-        //			bPlayerStartKeyDown = true;
-        //			InputEventCtrl.GetInstance().ClickStartBtOne( ButtonState.DOWN );
-        //		}
-        //		//else if ( bPlayerStartKeyDown && 0x00 == (buffer[28]&0x01) ) { //test
-        //		else if ( bPlayerStartKeyDown && 0x00 == (buffer[9]&0x01) ) {
-        ////			ScreenLog.Log("game startBt up!");
-        //			bPlayerStartKeyDown = false;
-        //			InputEventCtrl.GetInstance().ClickStartBtOne( ButtonState.UP );
-        //		}
-
-        //按键2 - 设置确定按键.
-        //if (buffer[22] == 0x00 || buffer[22] == 0xff)
-        //{
-        //}
-        //else
-        //{
-        //    if (buffer[24] == 0x00 || buffer[24] == 0xff)
-        //    {
-        //    }
-        //    else
-        //    {
-        //        if ((buffer[22] & 0x10) == 0x10)
-        //        {
-        //            if (bSetEnterKeyDown && (buffer[24] & 0x20) == 0x20)
-        //            {
-        //                //按键弹起.
-        //                //ScreenLog.Log("setEnterBt up!");
-        //                bSetEnterKeyDown = false;
-        //                //InputEventCtrl.GetInstance().ClickSetEnterBt(ButtonState.UP);
-        //            }
-        //            else if (!bSetEnterKeyDown && (buffer[24] & 0x20) == 0x00)
-        //            {
-        //                //按键按下.
-        //                //ScreenLog.Log("setEnterBt down!");
-        //                bSetEnterKeyDown = true;
-        //                //InputEventCtrl.GetInstance().ClickSetEnterBt(ButtonState.DOWN);
-        //            }
-        //        }
-        //        else if ((buffer[22] & 0x40) == 0x40)
-        //        {
-        //            if (bSetEnterKeyDown && (buffer[24] & 0x80) == 0x80)
-        //            {
-        //                //按键弹起.
-        //                //ScreenLog.Log("setEnterBt up!");
-        //                bSetEnterKeyDown = false;
-        //                //InputEventCtrl.GetInstance().ClickSetEnterBt(ButtonState.UP);
-        //            }
-        //            else if (!bSetEnterKeyDown && (buffer[24] & 0x80) == 0x00)
-        //            {
-        //                //按键按下.
-        //                //ScreenLog.Log("setEnterBt down!");
-        //                bSetEnterKeyDown = true;
-        //                //InputEventCtrl.GetInstance().ClickSetEnterBt(ButtonState.DOWN);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //        if ( !bSetEnterKeyDown && 0x10 == (buffer[9]&0x10) ) {
-        //			bSetEnterKeyDown = true;
-        ////			ScreenLog.Log("game setEnterBt down!");
-        //			InputEventCtrl.GetInstance().ClickSetEnterBt( ButtonState.DOWN );
-        //		}
-        //		else if ( bSetEnterKeyDown && 0x00 == (buffer[9]&0x10) ) {
-        //			bSetEnterKeyDown = false;
-        ////			ScreenLog.Log("game setEnterBt up!");
-        //			InputEventCtrl.GetInstance().ClickSetEnterBt( ButtonState.UP );
-        //		}
-
-        //按键8 - 设置移动按键.
-        //if (buffer[25] == 0x00 || buffer[25] == 0xff)
-        //{
-        //}
-        //else
-        //{
-        //    if (buffer[27] == 0x00 || buffer[27] == 0xff)
-        //    {
-        //    }
-        //    else
-        //    {
-        //        if ((buffer[25] & 0x10) == 0x10)
-        //        {
-        //            if (bSetMoveKeyDown && (buffer[27] & 0x02) == 0x02)
-        //            {
-        //                //按键弹起.
-        //                //ScreenLog.Log("setMoveBt up!");
-        //                bSetMoveKeyDown = false;
-        //                //InputEventCtrl.GetInstance().ClickSetMoveBt(ButtonState.UP);
-        //            }
-        //            else if (!bSetMoveKeyDown && (buffer[27] & 0x02) == 0x00)
-        //            {
-        //                //按键按下.
-        //                //ScreenLog.Log("setMoveBt down!");
-        //                bSetMoveKeyDown = true;
-        //                //InputEventCtrl.GetInstance().ClickSetMoveBt(ButtonState.DOWN);
-        //            }
-        //        }
-        //        else if ((buffer[25] & 0x40) == 0x40)
-        //        {
-        //            if (bSetMoveKeyDown && (buffer[27] & 0x10) == 0x10)
-        //            {
-        //                //按键弹起.
-        //                //ScreenLog.Log("setMoveBt up!");
-        //                bSetMoveKeyDown = false;
-        //                //InputEventCtrl.GetInstance().ClickSetMoveBt(ButtonState.UP);
-        //            }
-        //            else if (!bSetMoveKeyDown && (buffer[27] & 0x10) == 0x00)
-        //            {
-        //                //按键按下.
-        //                //ScreenLog.Log("setMoveBt down!");
-        //                bSetMoveKeyDown = true;
-        //                //InputEventCtrl.GetInstance().ClickSetMoveBt(ButtonState.DOWN);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //        if ( !bSetMoveKeyDown && 0x20 == (buffer[9]&0x20) ) {
-        //			bSetMoveKeyDown = true;
-        ////			ScreenLog.Log("game setMoveBt down!");
-        //			InputEventCtrl.GetInstance().ClickSetMoveBt( ButtonState.DOWN );
-        //		}
-        //		else if( bSetMoveKeyDown && 0x00 == (buffer[9]&0x20) ) {
-        //			bSetMoveKeyDown = false;
-        ////			ScreenLog.Log("game setMoveBt up!");
-        //			InputEventCtrl.GetInstance().ClickSetMoveBt( ButtonState.UP );
-        //		}
-
-        //		if ( !IsClickLaBaBt && 0x04 == (buffer[9]&0x04) ) {
-        //			IsClickLaBaBt = true;
-        ////			ScreenLog.Log("game LaBaBt down!");
-        //			InputEventCtrl.GetInstance().ClickLaBaBt( ButtonState.DOWN );
-        //		}
-        //		else if( IsClickLaBaBt && 0x00 == (buffer[9]&0x04) ) {
-        //			IsClickLaBaBt = false;
-        ////			ScreenLog.Log("game LaBaBt up!");
-        //			InputEventCtrl.GetInstance().ClickLaBaBt( ButtonState.UP );
-        //		}
     }
 
-	public static bool IsPlayerActivePcvr = true;
-	public static float TimeLastActivePcvr;
+    /// <summary>
+    /// 玩家是否激活游戏.
+    /// </summary>
+    [HideInInspector]
+	public bool IsPlayerActivePcvr = true;
+	float TimeLastActivePcvr;
+    /// <summary>
+    /// 检测硬件是否被激活.
+    /// 动态调整串口通信速度.
+    /// </summary>
 	void CheckIsPlayerActivePcvr()
 	{
-		if (Application.loadedLevel >= 1) {
-			return;
+		if (Application.loadedLevel >= 1)
+        {
+            IsPlayerActivePcvr = true;
+            return;
 		}
 
-		if (!IsPlayerActivePcvr) {
+		if (!IsPlayerActivePcvr)
+        {
 			return;
 		}
 		
@@ -1964,7 +867,10 @@ void User_KEY_2_Handle(void)			//coin 4 key
 		}
 	}
 	
-	public static void SetIsPlayerActivePcvr()
+    /// <summary>
+    /// 激活pcvr.
+    /// </summary>
+	public void SetIsPlayerActivePcvr()
 	{
 		if (!bIsHardWare) {
 			return;
@@ -1976,22 +882,31 @@ void User_KEY_2_Handle(void)			//coin 4 key
     /// <summary>
     /// 设置彩票机打印命令.
     /// </summary>
-    public void SetCaiPiaoPrintCmd(CaiPiaoPrintCmd printCmd, CaiPiaoJi indexCaiPiaoJi, int caiPiaoCount = 1)
+    public void SetCaiPiaoPrintCmd(CaiPiaoPrintCmd printCmd, CaiPiaoJi indexCaiPiaoJi, int caiPiaoCount)
     {
         Debug.Log("SetCaiPiaoPrintState -> printCmd " + printCmd + ", indexCaiPiaoJi " + indexCaiPiaoJi + ", caiPiaoCount " + caiPiaoCount);
         CaiPiaoPrintCmdVal[(int)indexCaiPiaoJi] = printCmd;
         if (printCmd == CaiPiaoPrintCmd.QuanPiaoPrint || printCmd == CaiPiaoPrintCmd.BanPiaoPrint)
         {
             CaiPiaoCountPrint[(int)indexCaiPiaoJi] = caiPiaoCount;
+            CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] = CaiPiaoPrintState.Null;
         }
     }
 
+    /// <summary>
+    /// 收到彩票打印状态信息.
+    /// </summary>
     void OnReceiveCaiPiaoJiPrintState(CaiPiaoPrintState printSt, CaiPiaoJi indexCaiPiaoJi)
     {
         switch (printSt)
         {
             case CaiPiaoPrintState.WuXiao:
                 {
+                    if (CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] != CaiPiaoPrintState.WuXiao)
+                    {
+                        Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print wuXiao!");
+                    }
+
                     if (CaiPiaoCountPrint[(int)indexCaiPiaoJi] > 0)
                     {
                         SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.QuanPiaoPrint, indexCaiPiaoJi, CaiPiaoCountPrint[(int)indexCaiPiaoJi]);
@@ -2001,7 +916,7 @@ void User_KEY_2_Handle(void)			//coin 4 key
             case CaiPiaoPrintState.Succeed:
                 {
                     Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print succeed!");
-                    SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi);
+                    SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi, 0);
                     if (CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] != CaiPiaoPrintState.Succeed)
                     {
                         CaiPiaoCountPrint[(int)indexCaiPiaoJi] -= 1;
@@ -2011,19 +926,43 @@ void User_KEY_2_Handle(void)			//coin 4 key
             case CaiPiaoPrintState.Failed:
                 {
                     Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print failed!");
-                    SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi);
+                    SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi, 0);
                     break;
                 }
         }
         CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] = printSt;
     }
 
+    /// <summary>
+    /// 玩家币值索引.
+    /// </summary>
     public enum PlayerCoinEnum
     {
         player01 = 0,
         player02 = 1,
         player03 = 2,
         player04 = 3,
+    }
+
+    /// <summary>
+    /// hid币值信息.
+    /// </summary>
+    int[] PlayerCoinHidArray = new int[4];
+    /// <summary>
+    /// 玩家币值信息.
+    /// </summary>
+    [HideInInspector]
+    public int[] PlayerCoinArray = new int[4];
+    /// <summary>
+    /// 减币.
+    /// </summary>
+    public void SubPlayerCoin(int subNum, PlayerCoinEnum indexPlayer)
+    {
+        int indexVal = (int)indexPlayer;
+        if (PlayerCoinArray[indexVal] > subNum)
+        {
+            PlayerCoinArray[indexVal] -= subNum;
+        }
     }
 
     /// <summary>
@@ -2048,6 +987,11 @@ void User_KEY_2_Handle(void)			//coin 4 key
     }
 
     /// <summary>
+    /// 电位器数据列表.
+    /// </summary>
+    [HideInInspector]
+    public uint[] DianWeiQiDtArray = new uint[8];
+    /// <summary>
     /// 检测ADKey是否错误.
     /// </summary>
     public bool CheckADKeyIsError(byte buffer)
@@ -2064,34 +1008,48 @@ void User_KEY_2_Handle(void)			//coin 4 key
         return isError;
     }
 
+    /// <summary>
+    /// 获取电位器数据信息.
+    /// </summary>
+    public uint GetDianWeiQiDt(byte gaoWei, byte diWei)
+    {
+        return (((uint)gaoWei & 0x0f) << 8) + diWei;
+    }
+
+    /// <summary>
+    /// 更新电位器数据信息.
+    /// </summary>
+    void UpdateDianWeiQiDt(byte[] buffer)
+    {
+        if (CheckADKeyIsError(buffer[46]))
+        {
+            return;
+        }
+
+        DianWeiQiDtArray[0] = GetDianWeiQiDt(buffer[2], buffer[3]);
+        DianWeiQiDtArray[1] = GetDianWeiQiDt(buffer[4], buffer[5]);
+        DianWeiQiDtArray[2] = GetDianWeiQiDt(buffer[6], buffer[7]);
+        DianWeiQiDtArray[3] = GetDianWeiQiDt(buffer[8], buffer[9]);
+        DianWeiQiDtArray[4] = GetDianWeiQiDt(buffer[10], buffer[11]);
+        DianWeiQiDtArray[5] = GetDianWeiQiDt(buffer[12], buffer[13]);
+        DianWeiQiDtArray[6] = GetDianWeiQiDt(buffer[14], buffer[15]);
+        DianWeiQiDtArray[7] = GetDianWeiQiDt(buffer[16], buffer[17]);
+    }
+
+    /// <summary>
+    /// 是否可以检测读取的数据.
+    /// </summary>
     bool IsCanCheckReadMsg;
     /// <summary>
     /// 检测获取的IO信息是否错误.
     /// </summary>
-    /// <returns></returns>
     public bool CheckGetMsgInfoIsError(byte[] buffer)
     {
-        if (!MyCOMDevice.IsFindDeviceDt)
+        if (!MyCOMDevice.GetInstance().IsFindDeviceDt)
         {
             return true;
         }
-
-        if (!MyCOMDevice.ComThreadClass.IsReadComMsg)
-        {
-            return true;
-        }
-
-        if (MyCOMDevice.ComThreadClass.IsReadMsgComTimeOut)
-        {
-            return true;
-        }
-
-        if (MyCOMDevice.ComThreadClass.ReadByteMsg.Length < MyCOMDevice.ComThreadClass.BufLenRead)
-        {
-            Debug.LogWarning("ReadBufLen was wrong! len is " + MyCOMDevice.ComThreadClass.ReadByteMsg.Length);
-            return true;
-        }
-
+        
         if (MyCOMDevice.ComThreadClass.ReadCount < 3 && !IsCanCheckReadMsg)
         {
             //抛掉前几包无效数据.

@@ -65,7 +65,7 @@ public class HardWareTest : MonoBehaviour
         }
 
         pcvr.CaiPiaoPrintState state02 = (pcvr.CaiPiaoPrintState)caiPiaoPrintSt02;
-        switch (state01)
+        switch (state02)
         {
             case pcvr.CaiPiaoPrintState.WuXiao:
                 {
@@ -142,19 +142,14 @@ public class HardWareTest : MonoBehaviour
     public UILabel[] DianWeiQiLb;
     void UpdateDianWeiQiDt(byte[] buffer)
     {
-        if (pcvr.GetInstance().CheckADKeyIsError(buffer[46]))
-        {
-            return;
-        }
-
-        DianWeiQiLb[0].text = ((((uint)buffer[2] & 0x0f) << 8) + buffer[3]).ToString();
-        DianWeiQiLb[1].text = ((((uint)buffer[4] & 0x0f) << 8) + buffer[5]).ToString();
-        DianWeiQiLb[2].text = ((((uint)buffer[6] & 0x0f) << 8) + buffer[7]).ToString();
-        DianWeiQiLb[3].text = ((((uint)buffer[8] & 0x0f) << 8) + buffer[9]).ToString();
-        DianWeiQiLb[4].text = ((((uint)buffer[10] & 0x0f) << 8) + buffer[11]).ToString();
-        DianWeiQiLb[5].text = ((((uint)buffer[12] & 0x0f) << 8) + buffer[13]).ToString();
-        DianWeiQiLb[6].text = ((((uint)buffer[14] & 0x0f) << 8) + buffer[15]).ToString();
-        DianWeiQiLb[7].text = ((((uint)buffer[16] & 0x0f) << 8) + buffer[17]).ToString();
+        DianWeiQiLb[0].text = pcvr.GetInstance().DianWeiQiDtArray[0].ToString();
+        DianWeiQiLb[1].text = pcvr.GetInstance().DianWeiQiDtArray[1].ToString();
+        DianWeiQiLb[2].text = pcvr.GetInstance().DianWeiQiDtArray[2].ToString();
+        DianWeiQiLb[3].text = pcvr.GetInstance().DianWeiQiDtArray[3].ToString();
+        DianWeiQiLb[4].text = pcvr.GetInstance().DianWeiQiDtArray[4].ToString();
+        DianWeiQiLb[5].text = pcvr.GetInstance().DianWeiQiDtArray[5].ToString();
+        DianWeiQiLb[6].text = pcvr.GetInstance().DianWeiQiDtArray[6].ToString();
+        DianWeiQiLb[7].text = pcvr.GetInstance().DianWeiQiDtArray[7].ToString();
     }
 
     /// <summary>
