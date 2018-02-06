@@ -43,7 +43,7 @@ public class HardWareTest : MonoBehaviour
 
     void GetMessage(byte[] buffer)
     {
-        if (pcvr.GetInstance().CheckGetMsgInfoIsError(buffer))
+        if (pcvr.GetInstance().mPcvrTXManage.CheckGetMsgInfoIsError(buffer))
         {
             return;
         }
@@ -57,40 +57,40 @@ public class HardWareTest : MonoBehaviour
     public UILabel[] CaiPiaoJiLbArray;
     void UpdateCaiPiaoJiInfo(byte caiPiaoPrintSt01, byte caiPiaoPrintSt02)
     {
-        pcvr.CaiPiaoPrintState state01 = (pcvr.CaiPiaoPrintState)caiPiaoPrintSt01;
+        pcvrTXManage.CaiPiaoPrintState state01 = (pcvrTXManage.CaiPiaoPrintState)caiPiaoPrintSt01;
         switch (state01)
         {
-            case pcvr.CaiPiaoPrintState.WuXiao:
+            case pcvrTXManage.CaiPiaoPrintState.WuXiao:
                 {
                     CaiPiaoJiLbArray[0].text = "无效";
                     break;
                 }
-            case pcvr.CaiPiaoPrintState.Failed:
+            case pcvrTXManage.CaiPiaoPrintState.Failed:
                 {
                     CaiPiaoJiLbArray[0].text = "失败";
                     break;
                 }
-            case pcvr.CaiPiaoPrintState.Succeed:
+            case pcvrTXManage.CaiPiaoPrintState.Succeed:
                 {
                     CaiPiaoJiLbArray[0].text = "成功";
                     break;
                 }
         }
 
-        pcvr.CaiPiaoPrintState state02 = (pcvr.CaiPiaoPrintState)caiPiaoPrintSt02;
+        pcvrTXManage.CaiPiaoPrintState state02 = (pcvrTXManage.CaiPiaoPrintState)caiPiaoPrintSt02;
         switch (state02)
         {
-            case pcvr.CaiPiaoPrintState.WuXiao:
+            case pcvrTXManage.CaiPiaoPrintState.WuXiao:
                 {
                     CaiPiaoJiLbArray[1].text = "无效";
                     break;
                 }
-            case pcvr.CaiPiaoPrintState.Failed:
+            case pcvrTXManage.CaiPiaoPrintState.Failed:
                 {
                     CaiPiaoJiLbArray[1].text = "失败";
                     break;
                 }
-            case pcvr.CaiPiaoPrintState.Succeed:
+            case pcvrTXManage.CaiPiaoPrintState.Succeed:
                 {
                     CaiPiaoJiLbArray[1].text = "成功";
                     break;
@@ -105,18 +105,18 @@ public class HardWareTest : MonoBehaviour
     {
         string btGroupName = btGroup.name;
         string btPrintName = btPrint.name;
-        pcvr.CaiPiaoJi caiPiaoJi = pcvr.CaiPiaoJi.Null;
-        pcvr.CaiPiaoPrintCmd printCmd = pcvr.CaiPiaoPrintCmd.WuXiao;
+        pcvrTXManage.CaiPiaoJi caiPiaoJi = pcvrTXManage.CaiPiaoJi.Null;
+        pcvrTXManage.CaiPiaoPrintCmd printCmd = pcvrTXManage.CaiPiaoPrintCmd.WuXiao;
         switch (btGroupName)
         {
             case "caiPiaoJi01":
                 {
-                    caiPiaoJi = pcvr.CaiPiaoJi.Num01;
+                    caiPiaoJi = pcvrTXManage.CaiPiaoJi.Num01;
                     break;
                 }
             case "caiPiaoJi02":
                 {
-                    caiPiaoJi = pcvr.CaiPiaoJi.Num02;
+                    caiPiaoJi = pcvrTXManage.CaiPiaoJi.Num02;
                     break;
                 }
         }
@@ -126,25 +126,25 @@ public class HardWareTest : MonoBehaviour
         {
             case "Button_01":
                 {
-                    printCmd = pcvr.CaiPiaoPrintCmd.QuanPiaoPrint;
+                    printCmd = pcvrTXManage.CaiPiaoPrintCmd.QuanPiaoPrint;
                     break;
                 }
             case "Button_02":
                 {
-                    printCmd = pcvr.CaiPiaoPrintCmd.BanPiaoPrint;
+                    printCmd = pcvrTXManage.CaiPiaoPrintCmd.BanPiaoPrint;
                     break;
                 }
             case "Button_03":
                 {
-                    printCmd = pcvr.CaiPiaoPrintCmd.QuanPiaoPrint;
+                    printCmd = pcvrTXManage.CaiPiaoPrintCmd.QuanPiaoPrint;
                     countCaiPiao = 5;
                     break;
                 }
         }
 
-        if (pcvr.GetInstance().CaiPiaoCountPrint[(int)caiPiaoJi] <= 0)
+        if (pcvr.GetInstance().mPcvrTXManage.CaiPiaoCountPrint[(int)caiPiaoJi] <= 0)
         {
-            pcvr.GetInstance().SetCaiPiaoPrintCmd(printCmd, caiPiaoJi, countCaiPiao);
+            pcvr.GetInstance().mPcvrTXManage.SetCaiPiaoPrintCmd(printCmd, caiPiaoJi, countCaiPiao);
         }
     }
 
@@ -155,14 +155,14 @@ public class HardWareTest : MonoBehaviour
     public UILabel[] DianWeiQiLb;
     void UpdateDianWeiQiDt(byte[] buffer)
     {
-        DianWeiQiLb[0].text = pcvr.GetInstance().DianWeiQiDtArray[0].ToString();
-        DianWeiQiLb[1].text = pcvr.GetInstance().DianWeiQiDtArray[1].ToString();
-        DianWeiQiLb[2].text = pcvr.GetInstance().DianWeiQiDtArray[2].ToString();
-        DianWeiQiLb[3].text = pcvr.GetInstance().DianWeiQiDtArray[3].ToString();
-        DianWeiQiLb[4].text = pcvr.GetInstance().DianWeiQiDtArray[4].ToString();
-        DianWeiQiLb[5].text = pcvr.GetInstance().DianWeiQiDtArray[5].ToString();
-        DianWeiQiLb[6].text = pcvr.GetInstance().DianWeiQiDtArray[6].ToString();
-        DianWeiQiLb[7].text = pcvr.GetInstance().DianWeiQiDtArray[7].ToString();
+        DianWeiQiLb[0].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[0].ToString();
+        DianWeiQiLb[1].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[1].ToString();
+        DianWeiQiLb[2].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[2].ToString();
+        DianWeiQiLb[3].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[3].ToString();
+        DianWeiQiLb[4].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[4].ToString();
+        DianWeiQiLb[5].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[5].ToString();
+        DianWeiQiLb[6].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[6].ToString();
+        DianWeiQiLb[7].text = pcvr.GetInstance().mPcvrTXManage.DianWeiQiDtArray[7].ToString();
     }
 
     /// <summary>
@@ -197,63 +197,63 @@ public class HardWareTest : MonoBehaviour
     
     void ClickPcvrBtEvent01(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt01, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt01, val);
     }
     void ClickPcvrBtEvent02(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt02, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt02, val);
     }
     void ClickPcvrBtEvent03(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt03, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt03, val);
     }
     void ClickPcvrBtEvent04(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt04, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt04, val);
     }
     void ClickPcvrBtEvent05(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt05, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt05, val);
     }
     void ClickPcvrBtEvent06(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt06, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt06, val);
     }
     void ClickPcvrBtEvent07(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt07, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt07, val);
     }
     void ClickPcvrBtEvent08(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt08, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt08, val);
     }
     void ClickPcvrBtEvent09(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt09, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt09, val);
     }
     void ClickPcvrBtEvent10(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt10, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt10, val);
     }
     void ClickPcvrBtEvent11(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt11, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt11, val);
     }
     void ClickPcvrBtEvent12(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt12, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt12, val);
     }
     void ClickPcvrBtEvent13(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt13, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt13, val);
     }
     void ClickPcvrBtEvent14(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt14, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt14, val);
     }
     void ClickPcvrBtEvent15(InputEventCtrl.ButtonState val)
     {
-        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt15, val);
+        UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex.bt15, val);
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public class HardWareTest : MonoBehaviour
     /// <summary>
     /// 更新按键状态.
     /// </summary>
-    void UpdateAnJianLbInfo(pcvr.AnJianIndex indexAnJian, InputEventCtrl.ButtonState btState)
+    void UpdateAnJianLbInfo(pcvrTXManage.AnJianIndex indexAnJian, InputEventCtrl.ButtonState btState)
     {
         byte indexVal = (byte)indexAnJian;
         indexVal -= 1;
@@ -287,10 +287,10 @@ public class HardWareTest : MonoBehaviour
     /// </summary>
 	public void OnClickSubCoinBt()
 	{
-		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player01);
-		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player02);
-		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player03);
-		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player04);
+		pcvr.GetInstance().mPcvrTXManage.SubPlayerCoin(1, pcvrTXManage.PlayerCoinEnum.player01);
+		pcvr.GetInstance().mPcvrTXManage.SubPlayerCoin(1, pcvrTXManage.PlayerCoinEnum.player02);
+		pcvr.GetInstance().mPcvrTXManage.SubPlayerCoin(1, pcvrTXManage.PlayerCoinEnum.player03);
+		pcvr.GetInstance().mPcvrTXManage.SubPlayerCoin(1, pcvrTXManage.PlayerCoinEnum.player04);
     }
 
     /// <summary>
@@ -300,7 +300,7 @@ public class HardWareTest : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            BiZhiPlayerLb[i].text = pcvr.GetInstance().PlayerCoinArray[i].ToString();
+            BiZhiPlayerLb[i].text = pcvr.GetInstance().mPcvrTXManage.PlayerCoinArray[i].ToString();
         }
     }
 
@@ -354,6 +354,11 @@ public class HardWareTest : MonoBehaviour
     /// </summary>
 	public void OnClickLedBt(string parentName, string selfName)
 	{
+        if (!pcvr.bIsHardWare)
+        {
+            return;
+        }
+
         int parentIndex = Convert.ToInt32(parentName.Substring(parentName.Length - 2, 2));
         int selfIndex = Convert.ToInt32(selfName.Substring(selfName.Length - 2, 2));
         int indexVal = ((parentIndex - 1) * 8) + selfIndex;
@@ -364,8 +369,8 @@ public class HardWareTest : MonoBehaviour
         }
 
         int indexValTmp = indexVal - 1;
-        pcvr.LedState[indexValTmp] = !pcvr.LedState[indexValTmp];
-		switch (pcvr.LedState[indexValTmp]) {
+        pcvr.GetInstance().mPcvrTXManage.LedState[indexValTmp] = !pcvr.GetInstance().mPcvrTXManage.LedState[indexValTmp];
+		switch (pcvr.GetInstance().mPcvrTXManage.LedState[indexValTmp]) {
 		case true:
 			LedLabel[indexValTmp].text = indexVal + "灯亮";
 			break;
@@ -401,17 +406,17 @@ public class HardWareTest : MonoBehaviour
                 }
         }
 
-        switch (pcvr.GetInstance().JiDianQiCmdArray[indexVal])
+        switch (pcvr.GetInstance().mPcvrTXManage.JiDianQiCmdArray[indexVal])
         {
-            case pcvr.JiDianQiCmd.Close:
+            case pcvrTXManage.JiDianQiCmd.Close:
                 {
-                    pcvr.GetInstance().JiDianQiCmdArray[indexVal] = pcvr.JiDianQiCmd.Open;
+                    pcvr.GetInstance().mPcvrTXManage.JiDianQiCmdArray[indexVal] = pcvrTXManage.JiDianQiCmd.Open;
                     JiDianQiLbArray[indexVal].text = lbHead + "打开";
                     break;
                 }
-            case pcvr.JiDianQiCmd.Open:
+            case pcvrTXManage.JiDianQiCmd.Open:
                 {
-                    pcvr.GetInstance().JiDianQiCmdArray[indexVal] = pcvr.JiDianQiCmd.Close;
+                    pcvr.GetInstance().mPcvrTXManage.JiDianQiCmdArray[indexVal] = pcvrTXManage.JiDianQiCmd.Close;
                     JiDianQiLbArray[indexVal].text = lbHead + "关闭";
                     break;
                 }
@@ -447,7 +452,7 @@ public class HardWareTest : MonoBehaviour
 		IsOpenJiaMiJiaoYan = true;
 		//Instance.DelayCloseJiaMiJiaoYan();
 
-		pcvr.GetInstance().StartJiaoYanIO();
+		pcvr.GetInstance().mPcvrTXManage.StartJiaoYanIO();
 	}
 	
 	public void DelayCloseJiaMiJiaoYan()
