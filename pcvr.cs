@@ -288,34 +288,37 @@ public class pcvr : MonoBehaviour
         //继电器控制.
         buffer[23] = GetJiDianQiCmd();
 
-        buffer[25] = 0x85;
-        for (int i = 2; i <= 35; i++)
-        {
-            if (i == 32 || i == 25)
-            {
-            }
-            else
-            {
-                buffer[25] ^= buffer[i];
-            }
-        }
-
+        //数据校验位 26~44的异或校验、起始值为0x58（不包含自身） 第一步.
         buffer[32] = 0x58;
-        for (int i = 9; i <= 28; i++)
+        for (int i = 26; i <= 44; i++)
         {
+            if (i == 32)
+            {
+                continue;
+            }
             buffer[32] ^= buffer[i];
         }
 
+        //校验位，2~45的异或校验、起始值为0x85（不包含自身） 第二步.
+        buffer[25] = 0x85;
+        for (int i = 2; i <= 45; i++)
+        {
+            if (i == 25)
+            {
+                continue;
+            }
+            buffer[25] ^= buffer[i];
+        }
+
+        //数据校验 3~49的数据异或、异或初始值为0xba（不包含自身） 最后一步.
         buffer[46] = 0x53;
-        for (int i = 33; i <= 49; i++)
+        for (int i = 3; i <= 49; i++)
         {
             if (i == 46)
             {
+                continue;
             }
-            else
-            {
-                buffer[46] ^= buffer[i];
-            }
+            buffer[46] ^= buffer[i];
         }
         MyCOMDevice.ComThreadClass.WriteByteMsg = buffer;
     }
