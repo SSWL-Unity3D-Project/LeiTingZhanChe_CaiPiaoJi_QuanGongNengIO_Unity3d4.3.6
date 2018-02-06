@@ -19,8 +19,23 @@ public class HardWareTest : MonoBehaviour
 		IsTestHardWare = true;
 		pcvr.GetInstance();
 		JiaMiJiaoYanCtrlObj.SetActive(IsJiaMiTest);
-	}
-	public UILabel BeiYongYouMenLabel;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent01 += ClickPcvrBtEvent01;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent02 += ClickPcvrBtEvent02;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent03 += ClickPcvrBtEvent03;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent04 += ClickPcvrBtEvent04;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent05 += ClickPcvrBtEvent05;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent06 += ClickPcvrBtEvent06;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent07 += ClickPcvrBtEvent07;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent08 += ClickPcvrBtEvent08;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent09 += ClickPcvrBtEvent09;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent10 += ClickPcvrBtEvent10;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent11 += ClickPcvrBtEvent11;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent12 += ClickPcvrBtEvent12;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent13 += ClickPcvrBtEvent13;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent14 += ClickPcvrBtEvent14;
+        InputEventCtrl.GetInstance().ClickPcvrBtEvent15 += ClickPcvrBtEvent15;
+    }
+
 	void FixedUpdate () 
 	{
         GetMessage(MyCOMDevice.ComThreadClass.ReadByteMsg);
@@ -34,9 +49,7 @@ public class HardWareTest : MonoBehaviour
         }
         UpdateDianWeiQiDt(buffer);
         UpdateBiZhiDt(buffer[18], buffer[19]);
-        UpdateAnJianLbDt(buffer);
         UpdateBianMaQiLbDt(buffer);
-        CheckKaiFangAnJianInfo(buffer[33]);
         UpdateBiZhiPlayerInfo();
         UpdateCaiPiaoJiInfo(buffer[44], buffer[44]);
     }
@@ -182,269 +195,93 @@ public class HardWareTest : MonoBehaviour
         BianMaQiLb[1].text = buffer[31].ToString("X2");
     }
     
+    void ClickPcvrBtEvent01(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt01, val);
+    }
+    void ClickPcvrBtEvent02(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt02, val);
+    }
+    void ClickPcvrBtEvent03(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt03, val);
+    }
+    void ClickPcvrBtEvent04(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt04, val);
+    }
+    void ClickPcvrBtEvent05(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt05, val);
+    }
+    void ClickPcvrBtEvent06(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt06, val);
+    }
+    void ClickPcvrBtEvent07(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt07, val);
+    }
+    void ClickPcvrBtEvent08(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt08, val);
+    }
+    void ClickPcvrBtEvent09(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt09, val);
+    }
+    void ClickPcvrBtEvent10(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt10, val);
+    }
+    void ClickPcvrBtEvent11(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt11, val);
+    }
+    void ClickPcvrBtEvent12(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt12, val);
+    }
+    void ClickPcvrBtEvent13(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt13, val);
+    }
+    void ClickPcvrBtEvent14(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt14, val);
+    }
+    void ClickPcvrBtEvent15(InputEventCtrl.ButtonState val)
+    {
+        UpdateAnJianLbInfo(pcvr.AnJianIndex.bt15, val);
+    }
+
     /// <summary>
     /// AnJianLb[x]: 0 按键1, 1 按键2.
     /// </summary>
     public UILabel[] AnJianLb;
-    enum AnJianIndex
-    {
-        Null = 0,
-        bt01 = 1, //按键1
-        bt02 = 2,
-        bt03 = 3,
-        bt04 = 4,
-        bt05 = 5,
-        bt06 = 6,
-        bt07 = 7,
-        bt08 = 8,
-        bt09 = 9,
-        bt10 = 10,
-        bt11 = 11,
-        bt12 = 12,
-        bt13 = 13,
-        bt14 = 14,
-        bt15 = 15, //按键15
-    }
-
-    class AnJianDt
-    {
-        /// <summary>
-        /// 按键索引
-        /// </summary>
-        public AnJianIndex IndexAnJian = AnJianIndex.Null; //按键索引.
-        /// <summary>
-        /// 有效数据
-        /// </summary>
-        public byte YouXiaoDt = 21; //有效数据.
-        /// <summary>
-        /// 按键数据
-        /// </summary>
-        public byte AnJianVal = 20; //按键数据.
-        /// <summary>
-        /// 有效数据检测01
-        /// </summary>
-        public byte YouXiao_01 = 0x10; //有效按键数据检测01
-        /// <summary>
-        /// 有效数据检测02
-        /// </summary>
-        public byte YouXiao_02 = 0x40; //有效按键数据检测02
-        /// <summary>
-        /// 按键检测数据
-        /// </summary>
-        public byte AnJianKey_01 = 0x00; //按键检测数据01.
-        /// <summary>
-        /// 按键检测数据
-        /// </summary>
-        public byte AnJianKey_02 = 0x00; //按键检测数据02.
-        /// <summary>
-        /// 按键数据文本索引
-        /// </summary>
-        public byte IndexAnJianTx = 0; //按键数据文本索引.
-        public AnJianDt(AnJianIndex indexAnJian, byte youXiaoDt, byte anJianVal, byte youXiao_01, byte youXiao_02, byte anJianKey_01, byte anJianKey_02)
-        {
-            IndexAnJian = indexAnJian;
-            YouXiaoDt = youXiaoDt;
-            AnJianVal = anJianVal;
-            YouXiao_01 = youXiao_01;
-            YouXiao_02 = youXiao_02;
-            AnJianKey_01 = anJianKey_01;
-            AnJianKey_02 = anJianKey_02;
-        }
-    }
-    /// <summary>
-    /// 按键状态.
-    /// </summary>
-    byte[] AnJianState = new byte[15];
-    /// <summary>
-    /// 检测按键状态.
-    /// </summary>
-    /// <param name="anJianDtVal"></param>
-    void CheckAnJianDt(AnJianDt anJianDtVal)
-    {
-        //test
-        //if (anJianDtVal.IndexAnJian != AnJianIndex.bt03)
-        //{
-        //    return;
-        //}
-        //test
-
-        byte indexVal = (byte)anJianDtVal.IndexAnJian;
-        indexVal -= 1;
-        if ((anJianDtVal.YouXiaoDt & anJianDtVal.YouXiao_01) == anJianDtVal.YouXiao_01 && (anJianDtVal.YouXiaoDt & anJianDtVal.YouXiao_02) != anJianDtVal.YouXiao_02)
-        {
-            //按键有效位01.
-            if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_01) == anJianDtVal.AnJianKey_01 && AnJianState[indexVal] == 0)
-            {
-                AnJianState[indexVal] = 1;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.UP);
-                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-UP: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_01 " + anJianDtVal.YouXiao_01.ToString("X2") + ", AnJianKey_01 " + anJianDtVal.AnJianKey_01.ToString("X2"));
-            }
-            else if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_01) == 0x00 && AnJianState[indexVal] == 1)
-            {
-                AnJianState[indexVal] = 0;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.DOWN);
-                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-DOWN: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_01 " + anJianDtVal.YouXiao_01.ToString("X2") + ", AnJianKey_01 " + anJianDtVal.AnJianKey_01.ToString("X2"));
-            }
-        }
-
-        if ((anJianDtVal.YouXiaoDt & anJianDtVal.YouXiao_01) != anJianDtVal.YouXiao_01 && (anJianDtVal.YouXiaoDt & anJianDtVal.YouXiao_02) == anJianDtVal.YouXiao_02)
-        {
-            //按键有效位02.
-            if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_02) == anJianDtVal.AnJianKey_02 && AnJianState[indexVal] == 0)
-            {
-                AnJianState[indexVal] = 1;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.UP);
-                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-UP: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_02 " + anJianDtVal.YouXiao_02.ToString("X2") + ", AnJianKey_02 " + anJianDtVal.AnJianKey_02.ToString("X2"));
-            }
-            else if ((anJianDtVal.AnJianVal & anJianDtVal.AnJianKey_02) == 0x00 && AnJianState[indexVal] == 1)
-            {
-                AnJianState[indexVal] = 0;
-                UpdateAnJianLbInfo(anJianDtVal.IndexAnJian, ButtonState.DOWN);
-                UnityEngine.Debug.Log(anJianDtVal.IndexAnJian + "-DOWN: YouXiaoDt " + anJianDtVal.YouXiaoDt.ToString("X2") + ", AnJianVal " + anJianDtVal.AnJianVal.ToString("X2") + ", YouXiao_02 " + anJianDtVal.YouXiao_02.ToString("X2") + ", AnJianKey_02 " + anJianDtVal.AnJianKey_02.ToString("X2"));
-            }
-        }
-    }
-
-    /// <summary>
-    /// 检测开放按键状态.
-    /// </summary>
-    void CheckKaiFangAnJianInfo(byte buffer)
-    {
-        //按键11（彩票3）
-        if ((buffer & 0x01) == 0x01 && AnJianState[10] == 0)
-        {
-            AnJianState[10] = 1;
-            UpdateAnJianLbInfo(AnJianIndex.bt11, ButtonState.UP);
-        }
-        else if ((buffer & 0x01) == 0x00 && AnJianState[10] == 1)
-        {
-            AnJianState[10] = 0;
-            UpdateAnJianLbInfo(AnJianIndex.bt11, ButtonState.DOWN);
-        }
-
-        //按键12（彩票4）
-        if ((buffer & 0x02) == 0x02 && AnJianState[11] == 0)
-        {
-            AnJianState[11] = 1;
-            UpdateAnJianLbInfo(AnJianIndex.bt12, ButtonState.UP);
-        }
-        else if ((buffer & 0x02) == 0x00 && AnJianState[11] == 1)
-        {
-            AnJianState[11] = 0;
-            UpdateAnJianLbInfo(AnJianIndex.bt12, ButtonState.DOWN);
-        }
-
-        //按键12（编码A）
-        if ((buffer & 0x04) == 0x04 && AnJianState[12] == 0)
-        {
-            AnJianState[12] = 1;
-            UpdateAnJianLbInfo(AnJianIndex.bt13, ButtonState.UP);
-        }
-        else if ((buffer & 0x04) == 0x00 && AnJianState[12] == 1)
-        {
-            AnJianState[12] = 0;
-            UpdateAnJianLbInfo(AnJianIndex.bt13, ButtonState.DOWN);
-        }
-
-        //按键14（编码B）
-        if ((buffer & 0x08) == 0x08 && AnJianState[13] == 0)
-        {
-            AnJianState[13] = 1;
-            UpdateAnJianLbInfo(AnJianIndex.bt14, ButtonState.UP);
-        }
-        else if ((buffer & 0x08) == 0x00 && AnJianState[13] == 1)
-        {
-            AnJianState[13] = 0;
-            UpdateAnJianLbInfo(AnJianIndex.bt14, ButtonState.DOWN);
-        }
-
-        //按键15（投币2）
-        if ((buffer & 0x10) == 0x10 && AnJianState[14] == 0)
-        {
-            AnJianState[14] = 1;
-            UpdateAnJianLbInfo(AnJianIndex.bt15, ButtonState.UP);
-        }
-        else if ((buffer & 0x10) == 0x00 && AnJianState[14] == 1)
-        {
-            AnJianState[14] = 0;
-            UpdateAnJianLbInfo(AnJianIndex.bt15, ButtonState.DOWN);
-        }
-    }
-
     /// <summary>
     /// 更新按键状态.
     /// </summary>
-    void UpdateAnJianLbInfo(AnJianIndex indexAnJian, ButtonState btState)
+    void UpdateAnJianLbInfo(pcvr.AnJianIndex indexAnJian, InputEventCtrl.ButtonState btState)
     {
         byte indexVal = (byte)indexAnJian;
         indexVal -= 1;
         switch (btState)
         {
-            case ButtonState.DOWN:
+            case InputEventCtrl.ButtonState.DOWN:
                 {
                     AnJianLb[indexVal].text = "按下";
                     break;
                 }
-            case ButtonState.UP:
+            case InputEventCtrl.ButtonState.UP:
                 {
                     AnJianLb[indexVal].text = "弹起";
                     break;
                 }
         }
     }
-
-    /// <summary>
-    /// 更新按键数据状态.
-    /// </summary>
-    void UpdateAnJianLbDt(byte[] buffer)
-    {
-        //键值有效位 2、3、5、7分别是1101
-        if (pcvr.GetInstance().CheckAnJianInfoIsError(buffer[41]))
-        {
-            return;
-        }
-
-        //按键1（投币3）
-        AnJianDt anJianDtVal = new AnJianDt(AnJianIndex.bt01, buffer[21], buffer[20], 0x10, 0x40, 0x04, 0x10);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键2（投币4）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt02, buffer[22], buffer[24], 0x10, 0x40, 0x20, 0x80);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键3（开始1）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt03, buffer[52], buffer[35], 0x10, 0x40, 0x20, 0x80);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键4（开始2）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt04, buffer[51], buffer[38], 0x04, 0x10, 0x04, 0x10);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键5（开始3）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt05, buffer[37], buffer[42], 0x02, 0x20, 0x08, 0x04);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键6（开始4）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt06, buffer[39], buffer[43], 0x02, 0x80, 0x01, 0x02);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键7（设置）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt07, buffer[36], buffer[40], 0x04, 0x10, 0x04, 0x10);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键8（移动）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt08, buffer[25], buffer[27], 0x10, 0x40, 0x02, 0x10);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键9（彩票1）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt09, buffer[28], buffer[32], 0x01, 0x80, 0x04, 0x20);
-        CheckAnJianDt(anJianDtVal);
-
-        //按键10（彩票2）
-        anJianDtVal = new AnJianDt(AnJianIndex.bt10, buffer[34], buffer[29], 0x01, 0x80, 0x01, 0x08);
-        CheckAnJianDt(anJianDtVal);
-    }
-    
+        
     /// <summary>
     /// 点击减币按键.
     /// </summary>
