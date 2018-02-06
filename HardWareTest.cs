@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
 using System.Diagnostics;
 
@@ -11,32 +10,15 @@ public class HardWareTest : MonoBehaviour
         Succeed,
         Failed,
     }
-    public UILabel[] m_Label;
-	public UILabel m_HitTimmerSet;
-	public UISlider m_HitTimmerValue;
-	public UILabel m_FallTimmerSet;
-	public UISlider m_FallTimmerValue;
-
-	public UILabel TouBiLabel;
-	public UILabel ShaCheLabel;
-	public UILabel AnJianLabel;
-	public UILabel YouMenLabel;
-	public UILabel FangXiangLabel;
+    
 	public static bool IsTestHardWare;
 	public static HardWareTest Instance;
 	void Start ()
 	{
 		Instance = this;
-		JiaMiJiaoYanCtrlObj.SetActive(IsJiaMiTest);
 		IsTestHardWare = true;
-		AnJianLabel.text = "";
-		//InputEventCtrl.GetInstance().ClickSetEnterBtEvent += ClickSetEnterBtEvent;
-		//InputEventCtrl.GetInstance().ClickSetMoveBtEvent += ClickSetMoveBtEvent;
-		//InputEventCtrl.GetInstance().ClickStartBtOneEvent += ClickStartBtOneEvent;
-		//InputEventCtrl.GetInstance().ClickCloseDongGanBtEvent += ClickCloseDongGanBtEvent;
-		//InputEventCtrl.GetInstance().ClickLaBaBtEvent += ClickLaBaBtEvent;
 		pcvr.GetInstance();
-		pcvr.CloseFangXiangPanPower();
+		JiaMiJiaoYanCtrlObj.SetActive(IsJiaMiTest);
 	}
 	public UILabel BeiYongYouMenLabel;
 	void FixedUpdate () 
@@ -126,6 +108,7 @@ public class HardWareTest : MonoBehaviour
                 }
         }
 
+        int countCaiPiao = 1;
         switch (btPrintName)
         {
             case "Button_01":
@@ -138,11 +121,22 @@ public class HardWareTest : MonoBehaviour
                     printCmd = pcvr.CaiPiaoPrintCmd.BanPiaoPrint;
                     break;
                 }
+            case "Button_03":
+                {
+                    printCmd = pcvr.CaiPiaoPrintCmd.QuanPiaoPrint;
+                    countCaiPiao = 5;
+                    break;
+                }
         }
-        pcvr.GetInstance().SetCaiPiaoPrintState(printCmd, caiPiaoJi);
+
+        if (pcvr.GetInstance().CaiPiaoCountPrint[(int)caiPiaoJi] <= 0)
+        {
+            pcvr.GetInstance().SetCaiPiaoPrintCmd(printCmd, caiPiaoJi, countCaiPiao);
+        }
     }
 
     /// <summary>
+    /// 更新电位器信息.
     /// DianWeiQiLb[x]: 0 1px, 1 1py.
     /// </summary>
     public UILabel[] DianWeiQiLb;
@@ -171,6 +165,9 @@ public class HardWareTest : MonoBehaviour
     /// BiZhiPlayerLb[x]: 0 玩家1, 1 玩家2, 2 玩家3, 3 玩家4.
     /// </summary>
     public UILabel[] BiZhiPlayerLb;
+    /// <summary>
+    /// 更新币值信息.
+    /// </summary>
     void UpdateBiZhiDt(byte[] buffer)
     {
         BiZhiLb[0].text = buffer[18].ToString("X2");
@@ -181,6 +178,9 @@ public class HardWareTest : MonoBehaviour
     /// BianMaQiLb[x]: 0 编码器1, 1 编码器2.
     /// </summary>
     public UILabel[] BianMaQiLb;
+    /// <summary>
+    /// 更新编码器信息.
+    /// </summary>
     void UpdateBianMaQiLbDt(byte[] buffer)
     {
         BianMaQiLb[0].text = buffer[30].ToString("X2");
@@ -208,7 +208,7 @@ public class HardWareTest : MonoBehaviour
         bt12 = 12,
         bt13 = 13,
         bt14 = 14,
-        bt15 = 15,
+        bt15 = 15, //按键15
     }
 
     class AnJianDt
@@ -236,11 +236,11 @@ public class HardWareTest : MonoBehaviour
         /// <summary>
         /// 按键检测数据
         /// </summary>
-        public byte AnJianKey_01 = 0x00; //按键检测数据.
+        public byte AnJianKey_01 = 0x00; //按键检测数据01.
         /// <summary>
         /// 按键检测数据
         /// </summary>
-        public byte AnJianKey_02 = 0x00; //按键检测数据.
+        public byte AnJianKey_02 = 0x00; //按键检测数据02.
         /// <summary>
         /// 按键数据文本索引
         /// </summary>
@@ -260,6 +260,10 @@ public class HardWareTest : MonoBehaviour
     /// 按键状态.
     /// </summary>
     byte[] AnJianState = new byte[15];
+    /// <summary>
+    /// 检测按键状态.
+    /// </summary>
+    /// <param name="anJianDtVal"></param>
     void CheckAnJianDt(AnJianDt anJianDtVal)
     {
         //test
@@ -306,6 +310,9 @@ public class HardWareTest : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 检测开放按键状态.
+    /// </summary>
     void CheckKaiFangAnJianInfo(byte buffer)
     {
         //按键11（彩票3）
@@ -369,6 +376,9 @@ public class HardWareTest : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 更新按键状态.
+    /// </summary>
     void UpdateAnJianLbInfo(AnJianIndex indexAnJian, ButtonState btState)
     {
         byte indexVal = (byte)indexAnJian;
@@ -388,15 +398,14 @@ public class HardWareTest : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 更新按键数据状态.
+    /// </summary>
     void UpdateAnJianLbDt(byte[] buffer)
     {
         //键值有效位 2、3、5、7分别是1101
-        if ((buffer[41] & 0x02) != 0x02
-            || (buffer[41] & 0x04) != 0x04
-            || (buffer[41] & 0x10) == 0x10
-            || (buffer[41] & 0x40) != 0x40)
+        if (pcvr.GetInstance().CheckAnJianInfoIsError(buffer[41]))
         {
-            UnityEngine.Debug.LogWarning("UpdateAnJianLbDt -> btKey was wrong! key is " + buffer[41].ToString("X2"));
             return;
         }
 
@@ -441,6 +450,9 @@ public class HardWareTest : MonoBehaviour
         CheckAnJianDt(anJianDtVal);
     }
     
+    /// <summary>
+    /// 点击减币按键.
+    /// </summary>
 	public void OnClickSubCoinBt()
 	{
 		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player01);
@@ -449,6 +461,9 @@ public class HardWareTest : MonoBehaviour
 		pcvr.GetInstance().SubPlayerCoin(1, pcvr.PlayerCoinEnum.player04);
     }
 
+    /// <summary>
+    /// 更新币值信息.
+    /// </summary>
     void UpdateBiZhiPlayerInfo()
     {
         for (int i = 0; i < 4; i++)
@@ -457,6 +472,9 @@ public class HardWareTest : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 点击关闭按键.
+    /// </summary>
 	public void OnClickCloseAppBt()
 	{
 		Application.Quit();
@@ -464,6 +482,9 @@ public class HardWareTest : MonoBehaviour
 	
 	public bool IsJiaMiTest = false;
 	public GameObject JiaMiJiaoYanCtrlObj;
+    /// <summary>
+    /// 点击重启按键.
+    /// </summary>
 	public void OnClickRestartAppBt()
 	{
         try
@@ -495,13 +516,16 @@ public class HardWareTest : MonoBehaviour
 		//p.StandardInput.WriteLine("exit");        //不過要記得加上Exit要不然下一行程式執行的時候會當機    return p.StandardOutput.ReadToEnd();        //從輸出流取得命令執行結果
 	}
 
-	public UILabel[] LedLabel = new UILabel[24];
+	public UILabel[] LedLabel = new UILabel[32];
+    /// <summary>
+    /// 点击led灯控制按键.
+    /// </summary>
 	public void OnClickLedBt(string parentName, string selfName)
 	{
         int parentIndex = Convert.ToInt32(parentName.Substring(parentName.Length - 2, 2));
         int selfIndex = Convert.ToInt32(selfName.Substring(selfName.Length - 2, 2));
         int indexVal = ((parentIndex - 1) * 8) + selfIndex;
-        if (indexVal < 1 || indexVal > 24)
+        if (indexVal < 1 || indexVal > 32)
         {
             UnityEngine.Debug.LogError("OnClickLedBt -> indexVal was wrong! indexVal " + indexVal);
             return;

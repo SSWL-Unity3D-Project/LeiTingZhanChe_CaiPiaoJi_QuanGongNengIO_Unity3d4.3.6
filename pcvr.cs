@@ -49,6 +49,8 @@ public class pcvr : MonoBehaviour
         StopPrint = 0xaa,
     }
     CaiPiaoPrintCmd[] CaiPiaoPrintCmdVal = new CaiPiaoPrintCmd[2];
+    public int[] CaiPiaoCountPrint = new int[2];
+    CaiPiaoPrintState[] CaiPiaoJiPrintStArray = new CaiPiaoPrintState[2];
     //public static uint ShaCheCurPcvr;
     //static bool IsClickLaBaBt;
     static public uint gOldCoinNum = 0;
@@ -1739,9 +1741,9 @@ void User_KEY_2_Handle(void)			//coin 4 key
 		}
 
         CaiPiaoPrintState caiPiaoPrintSt01 = (CaiPiaoPrintState)buffer[44];
-        CaiPiaoPrintState caiPiaoPrintSt02 = (CaiPiaoPrintState)buffer[45];
+        //CaiPiaoPrintState caiPiaoPrintSt02 = (CaiPiaoPrintState)buffer[44];
         CheckCaiPiaoJiPrintState(caiPiaoPrintSt01, CaiPiaoJi.Num01);
-        CheckCaiPiaoJiPrintState(caiPiaoPrintSt02, CaiPiaoJi.Num02);
+        //CheckCaiPiaoJiPrintState(caiPiaoPrintSt02, CaiPiaoJi.Num02);
 
         //按键1 - 动感控制开关
         //if (buffer[21] == 0x00 || buffer[21] == 0xff)
@@ -1972,12 +1974,16 @@ void User_KEY_2_Handle(void)			//coin 4 key
     }
 
     /// <summary>
-    /// 设置彩票机打印状态.
+    /// 设置彩票机打印命令.
     /// </summary>
-    public void SetCaiPiaoPrintState(CaiPiaoPrintCmd printCmd, CaiPiaoJi indexCaiPiaoJi)
+    public void SetCaiPiaoPrintCmd(CaiPiaoPrintCmd printCmd, CaiPiaoJi indexCaiPiaoJi, int caiPiaoCount = 1)
     {
-        Debug.Log("SetCaiPiaoPrintState -> printCmd " + printCmd + ", indexCaiPiaoJi " + indexCaiPiaoJi);
+        Debug.Log("SetCaiPiaoPrintState -> printCmd " + printCmd + ", indexCaiPiaoJi " + indexCaiPiaoJi + ", caiPiaoCount " + caiPiaoCount);
         CaiPiaoPrintCmdVal[(int)indexCaiPiaoJi] = printCmd;
+        if (printCmd == CaiPiaoPrintCmd.QuanPiaoPrint || printCmd == CaiPiaoPrintCmd.BanPiaoPrint)
+        {
+            CaiPiaoCountPrint[(int)indexCaiPiaoJi] = caiPiaoCount;
+        }
     }
 
     void CheckCaiPiaoJiPrintState(CaiPiaoPrintState printSt, CaiPiaoJi indexCaiPiaoJi)
@@ -1986,21 +1992,30 @@ void User_KEY_2_Handle(void)			//coin 4 key
         {
             case CaiPiaoPrintState.WuXiao:
                 {
+                    if (CaiPiaoCountPrint[(int)indexCaiPiaoJi] > 0)
+                    {
+                        SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.QuanPiaoPrint, indexCaiPiaoJi, CaiPiaoCountPrint[(int)indexCaiPiaoJi]);
+                    }
                     break;
                 }
             case CaiPiaoPrintState.Succeed:
                 {
                     Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print succeed!");
-                    SetCaiPiaoPrintState(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi);
+                    SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi);
+                    if (CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] != CaiPiaoPrintState.Succeed)
+                    {
+                        CaiPiaoCountPrint[(int)indexCaiPiaoJi] -= 1;
+                    }
                     break;
                 }
             case CaiPiaoPrintState.Failed:
                 {
                     Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print failed!");
-                    SetCaiPiaoPrintState(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi);
+                    SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi);
                     break;
                 }
         }
+        CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] = printSt;
     }
 
     public enum PlayerCoinEnum
@@ -2203,6 +2218,20 @@ void User_KEY_2_Handle(void)			//coin 4 key
                 }
         }
         return jiDianQiCmd;
+    }
+
+    public bool CheckAnJianInfoIsError(byte buffer)
+    {
+        //键值有效位 2、3、5、7分别是1101
+        if ((buffer & 0x02) != 0x02
+            || (buffer & 0x04) != 0x04
+            || (buffer & 0x10) == 0x10
+            || (buffer & 0x40) != 0x40)
+        {
+            Debug.LogWarning("UpdateAnJianLbDt -> btKey was wrong! key is " + buffer.ToString("X2"));
+            return true;
+        }
+        return false;
     }
 }
 
