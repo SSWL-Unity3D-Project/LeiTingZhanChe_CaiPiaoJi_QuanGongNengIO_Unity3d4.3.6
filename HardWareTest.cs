@@ -23,22 +23,22 @@ public class HardWareTest : MonoBehaviour
 	public UILabel BeiYongYouMenLabel;
 	void FixedUpdate () 
 	{
-        GetMessage();
+        GetMessage(MyCOMDevice.ComThreadClass.ReadByteMsg);
     }
 
-    void GetMessage()
+    void GetMessage(byte[] buffer)
     {
-        if (pcvr.GetInstance().CheckGetMsgInfoIsError(MyCOMDevice.ComThreadClass.ReadByteMsg))
+        if (pcvr.GetInstance().CheckGetMsgInfoIsError(buffer))
         {
             return;
         }
-        UpdateDianWeiQiDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
-        UpdateBiZhiDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
-        UpdateAnJianLbDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
-        UpdateBianMaQiLbDt(MyCOMDevice.ComThreadClass.ReadByteMsg);
-        CheckKaiFangAnJianInfo(MyCOMDevice.ComThreadClass.ReadByteMsg[33]);
+        UpdateDianWeiQiDt(buffer);
+        UpdateBiZhiDt(buffer[18], buffer[19]);
+        UpdateAnJianLbDt(buffer);
+        UpdateBianMaQiLbDt(buffer);
+        CheckKaiFangAnJianInfo(buffer[33]);
         UpdateBiZhiPlayerInfo();
-        UpdateCaiPiaoJiInfo(MyCOMDevice.ComThreadClass.ReadByteMsg[44], MyCOMDevice.ComThreadClass.ReadByteMsg[44]);
+        UpdateCaiPiaoJiInfo(buffer[44], buffer[44]);
     }
 
     public UILabel[] CaiPiaoJiLbArray;
@@ -163,10 +163,10 @@ public class HardWareTest : MonoBehaviour
     /// <summary>
     /// 更新币值信息.
     /// </summary>
-    void UpdateBiZhiDt(byte[] buffer)
+    void UpdateBiZhiDt(byte biZhi01, byte biZhi02)
     {
-        BiZhiLb[0].text = buffer[18].ToString("X2");
-        BiZhiLb[1].text = buffer[19].ToString("X2");
+        BiZhiLb[0].text = biZhi01.ToString("X2");
+        BiZhiLb[1].text = biZhi02.ToString("X2");
     }
 
     /// <summary>

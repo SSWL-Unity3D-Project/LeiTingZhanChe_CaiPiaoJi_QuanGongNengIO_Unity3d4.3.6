@@ -3,6 +3,14 @@
 public class pcvr : MonoBehaviour
 {
     static public bool bIsHardWare = true;
+    byte ReadHead_1 = 0x53;
+    byte ReadHead_2 = 0x57;
+    byte EndRead_1 = 0x0d;
+    byte EndRead_2 = 0x0a;
+    byte WriteHead_1 = 0x09;
+    byte WriteHead_2 = 0x05;
+    byte WriteEnd_1 = 0x0d;
+    byte WriteEnd_2 = 0x0a;
     /// <summary>
     /// 继电器命令.
     /// </summary>
@@ -47,61 +55,10 @@ public class pcvr : MonoBehaviour
     CaiPiaoPrintCmd[] CaiPiaoPrintCmdVal = new CaiPiaoPrintCmd[2];
     public int[] CaiPiaoCountPrint = new int[2];
     CaiPiaoPrintState[] CaiPiaoJiPrintStArray = new CaiPiaoPrintState[2];
-    //public static uint ShaCheCurPcvr;
-    //static bool IsClickLaBaBt;
- //   static public uint gOldCoinNum = 0;
-	//static private uint mOldCoinNum = 0;
-	//public int CoinNumCurrent = 0;
-	//static public bool IsCloseDongGanBtDown = false;
-	//static public bool bPlayerStartKeyDown = false;
-	//private bool bSetEnterKeyDown = false;
-	//static public bool bSetMoveKeyDown = false;
-	//public static bool IsZhenDongFangXiangPan;
-	//int SubCoinNum = 0;
-	//public static bool m_IsOpneForwardQinang = false;
-	//public static bool m_IsOpneBehindQinang = false;
-	//public static bool m_IsOpneLeftQinang = false;
-	//public static bool m_IsOpneRightQinang = false;
-	//public static bool m_IsOpneQinang1 = false;
-	//public static bool m_IsOpneQinang2 = false;
-	//public static bool m_IsOpneQinang3 = false;
-	//public static bool m_IsOpneQinang4 = false;
-	//public static uint SteerValMax = 999999;
-	//public static uint SteerValCen = 1765;
-	//public static uint SteerValMin = 0;
-	//public static uint SteerValCur;
-	//public static float mGetSteer = 0f;
-	//public static uint BikeShaCheCur;
-	//public static uint mBikePowerMin = 999999;
-	//public static uint mBikePowerMax = 0;
-	//public static float mGetPower = 0f;
-	//static uint BikePowerLen = 0;
-	//public static uint BikePowerCur;
-	//public static uint BikePowerOld;
-	//bool bIsJiaoYanBikeValue = false;
-	//static bool IsInitYouMenJiaoZhun = false;
-	//bool IsJiaoZhunFireBt;
-	//bool IsFanZhuangYouMen;
-	//static bool IsInitFangXiangJiaoZhun;
-	//bool IsFanZhuangFangXiang;
-	//int FangXiangJiaoZhunCount;
-	//public static uint CoinCurPcvr;
-	//public static uint BikePowerCurPcvr;
-	//public static StartLightState StartBtLight = StartLightState.Mie;
-	//public static StartLightState DongGanBtLight = StartLightState.Mie;
-	bool IsCleanHidCoin;
-	bool[] IsCleanHidCoinArray = new bool[4];
- //   static uint BikeDirLenA;
-	//static uint BikeDirLenB;
-	//static uint BikeDirLenC;
-	//static uint BikeDirLenD;
-	//public static bool IsActiveSheCheEvent;
-	//static bool IsInitShaCheJiaoZhun;
-	//static bool IsFanZhuangShaChe;
-	//static uint mBikeShaCheMin = 999999;
-	//static uint mBikeShaCheMax = 0;
-	//static uint BikeShaCheLen = 1;
-	//bool IsPlayFangXiangPanZhenDong;
+    /// <summary>
+    /// 是否清除hid币值.
+    /// </summary>
+    bool[] IsCleanHidCoinArray = new bool[4];
 	static private pcvr Instance = null;
 	static public pcvr GetInstance()
 	{
@@ -115,32 +72,7 @@ public class pcvr : MonoBehaviour
 		}
 		return Instance;
 	}
-
-	//static bool IsInitFangXiangPower;
-	//void InitFangXiangPowerOpen()
-	//{
-	//	if (HardWareTest.IsTestHardWare) {
-	//		return;
-	//	}
-
-	//	if (IsInitFangXiangPower) {
-	//		return;
-	//	}
-	//	IsInitFangXiangPower = true;
-	//	OpenFangXiangPanPower();
-	//	//Debug.Log("*********");
-	//	Invoke("DelayCloseFangXiangPanPower", 300f);
-	//}
-
-	//void DelayCloseFangXiangPanPower()
-	//{
-	//	//Debug.Log("*********55555555555");
-	//	IsInitFangXiangPower = false;
-	//	if (Application.loadedLevel != 1) {
-	//		CloseFangXiangPanPower();
-	//	}
-	//}
-
+    
 	void Start()
 	{
 		InitJiaoYanMiMa();
@@ -155,29 +87,6 @@ public class pcvr : MonoBehaviour
 		GetMessage();
 	}
 	
-	byte ReadHead_1 = 0x53;
-	byte ReadHead_2 = 0x57;
-    byte EndRead_1 = 0x0d;
-    byte EndRead_2 = 0x0a;
-    byte WriteHead_1 = 0x09;
-	byte WriteHead_2 = 0x05;
-	byte WriteEnd_1 = 0x0d;
-	byte WriteEnd_2 = 0x0a;
-	//public static bool IsOpenFangXiangPanPower = true;
-	//public static StartLightState ShaCheBtLight = StartLightState.Mie;
-	//public static void OpenFangXiangPanPower()
-	//{
-	//	IsOpenFangXiangPanPower = true;
-	//}
-	
-	//public static void CloseFangXiangPanPower()
-	//{
-	//	if (IsInitFangXiangPower) {
-	//		return;
-	//	}
-	//	IsOpenFangXiangPanPower = false;
-	//}
-
 	void SendMessage()
 	{
 		if (!MyCOMDevice.GetInstance().IsFindDeviceDt) {
@@ -503,7 +412,7 @@ public class pcvr : MonoBehaviour
         byte ledVal01 = ledDt.LedVal01; //有效数据1
         byte ledVal02 = ledDt.LedVal02; //有效数据2
         bool isOpenLed = LedState[indexLed];
-        if (UnityEngine.Random.Range(0, 100) % 2 == 0)
+        if (Random.Range(0, 100) % 2 == 0)
         {
             ledKey |= ledKey01;
             ledKey = (byte)(ledKey & (~(ledKey02)));
@@ -548,10 +457,13 @@ public class pcvr : MonoBehaviour
         ledZongKongNew = (byte)(ledZongKongNew & 0xFB);
     }
 
-    static void RandomJiaoYanDt()
+    /// <summary>
+    /// 随机校验数据.
+    /// </summary>
+    void RandomJiaoYanDt()
 	{	
 		for (int i = 1; i < 4; i++) {
-			JiaoYanDt[i] = (byte)UnityEngine.Random.Range(0x00, 0x7b);
+			JiaoYanDt[i] = (byte)Random.Range(0x00, 0x7b);
 		}
 		JiaoYanDt[0] = 0x00;
 		for (int i = 1; i < 4; i++) {
@@ -631,20 +543,23 @@ public class pcvr : MonoBehaviour
 		SUCCEED,
 		FAILED,
 	}
-	static JIAOYANENUM JiaoYanState = JIAOYANENUM.NULL;
-	static byte JiaoYanFailedMax = 0x03;
-	static byte JiaoYanSucceedCount;
-	static byte JiaoYanFailedCount;
-	static byte[] JiaoYanDt = new byte[4];
-	static byte[] JiaoYanMiMa = new byte[4];
-	static byte[] JiaoYanMiMaRand = new byte[4];
+	JIAOYANENUM JiaoYanState = JIAOYANENUM.NULL;
+	byte JiaoYanFailedMax = 0x03;
+	byte JiaoYanSucceedCount;
+	byte JiaoYanFailedCount;
+	byte[] JiaoYanDt = new byte[4];
+	byte[] JiaoYanMiMa = new byte[4];
+	byte[] JiaoYanMiMaRand = new byte[4];
 	
-	//#define First_pin			 	0xe5
-	//#define Second_pin		 	0x5d
-	//#define Third_pin		 		0x8c
+    /// <summary>
+    /// 初始化加密校验.
+    /// </summary>
 	void InitJiaoYanMiMa()
-	{
-		JiaoYanMiMa[1] = 0xe5; //0xff;
+    {
+        //#define First_pin			 	0xe5
+        //#define Second_pin		 	0x5d
+        //#define Third_pin		 		0x8c
+        JiaoYanMiMa[1] = 0xe5; //0xff;
 		JiaoYanMiMa[2] = 0x5d; //0xff;
 		JiaoYanMiMa[3] = 0x8c; //0xff;
 		JiaoYanMiMa[0] = 0x00;
@@ -653,6 +568,9 @@ public class pcvr : MonoBehaviour
 		}
 	}
 
+    /// <summary>
+    /// 随机校验密码.
+    /// </summary>
 	void RandomJiaoYanMiMaVal()
 	{
 		for (int i = 0; i < 4; i++) {
@@ -674,33 +592,6 @@ public class pcvr : MonoBehaviour
     /// 是否校验hid.
     /// </summary>
 	static public bool IsJiaoYanHid;
-	//public static int CountFXZD;
-	//public static int CountQNZD;
-	//public void OpenFangXiangPanZhenDong()
-	//{
-	//	if (IsPlayFangXiangPanZhenDong) {
-	//		return;
-	//	}
-	//	IsPlayFangXiangPanZhenDong = true;
-	//	CountFXZD++;
-	//	//Debug.Log("OpenFangXiangPanZhenDong -> CountFXZD "+CountFXZD+", CountQNZD "+CountQNZD);
-	//	StartCoroutine(PlayFangXiangPanZhenDong());
-	//}
-
-	//public static bool IsSlowLoopCom = false;
-	//IEnumerator PlayFangXiangPanZhenDong()
-	//{
-	//	int count = UnityEngine.Random.Range(1, 4);
-	//	//count = 1; //test
-	//	do {
-	//		IsZhenDongFangXiangPan = !IsZhenDongFangXiangPan;
-	//		count--;
-	//		yield return new WaitForSeconds(0.05f);
-	//	} while (count > -1);
-	//	IsZhenDongFangXiangPan = false;
-	//	//IsZhenDongFangXiangPan = true; //test
-	//	IsPlayFangXiangPanZhenDong = false;
-	//}
 
     /// <summary>
     /// 获取IO板的信息.
