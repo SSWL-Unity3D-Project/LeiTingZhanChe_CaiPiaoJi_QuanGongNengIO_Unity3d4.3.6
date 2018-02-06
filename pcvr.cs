@@ -1742,7 +1742,7 @@ void User_KEY_2_Handle(void)			//coin 4 key
 
         CaiPiaoPrintState caiPiaoPrintSt01 = (CaiPiaoPrintState)buffer[44];
         //CaiPiaoPrintState caiPiaoPrintSt02 = (CaiPiaoPrintState)buffer[44];
-        CheckCaiPiaoJiPrintState(caiPiaoPrintSt01, CaiPiaoJi.Num01);
+        OnReceiveCaiPiaoJiPrintState(caiPiaoPrintSt01, CaiPiaoJi.Num01);
         //CheckCaiPiaoJiPrintState(caiPiaoPrintSt02, CaiPiaoJi.Num02);
 
         //按键1 - 动感控制开关
@@ -1986,7 +1986,7 @@ void User_KEY_2_Handle(void)			//coin 4 key
         }
     }
 
-    void CheckCaiPiaoJiPrintState(CaiPiaoPrintState printSt, CaiPiaoJi indexCaiPiaoJi)
+    void OnReceiveCaiPiaoJiPrintState(CaiPiaoPrintState printSt, CaiPiaoJi indexCaiPiaoJi)
     {
         switch (printSt)
         {
