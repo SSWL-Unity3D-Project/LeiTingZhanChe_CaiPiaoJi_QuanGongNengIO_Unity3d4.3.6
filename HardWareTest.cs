@@ -4,19 +4,15 @@ using System.Diagnostics;
 
 public class HardWareTest : MonoBehaviour
 {
-    public enum JiaMiJiaoYanEnum
-    {
-        Null,
-        Succeed,
-        Failed,
-    }
-    
-	public static bool IsTestHardWare;
 	public static HardWareTest Instance;
-	void Start ()
+    public static HardWareTest GetInstance()
+    {
+        return Instance;
+    }
+
+    void Start ()
 	{
 		Instance = this;
-		IsTestHardWare = true;
 		pcvr.GetInstance();
 		JiaMiJiaoYanCtrlObj.SetActive(IsJiaMiTest);
         InputEventCtrl.GetInstance().ClickPcvrBtEvent01 += ClickPcvrBtEvent01;
@@ -55,6 +51,9 @@ public class HardWareTest : MonoBehaviour
     }
 
     public UILabel[] CaiPiaoJiLbArray;
+    /// <summary>
+    /// 更新彩票机状态信息.
+    /// </summary>
     void UpdateCaiPiaoJiInfo(byte caiPiaoPrintSt01, byte caiPiaoPrintSt02)
     {
         pcvrTXManage.CaiPiaoPrintState state01 = (pcvrTXManage.CaiPiaoPrintState)caiPiaoPrintSt01;
@@ -314,6 +313,9 @@ public class HardWareTest : MonoBehaviour
 	
 	public bool IsJiaMiTest = false;
 	public GameObject JiaMiJiaoYanCtrlObj;
+    public UILabel JiaMiJYLabel;
+    public UILabel JiaMiJYMsg;
+    bool IsOpenJiaMiJiaoYan;
     /// <summary>
     /// 点击重启按键.
     /// </summary>
@@ -423,9 +425,6 @@ public class HardWareTest : MonoBehaviour
         }
     }
 	
-	public UILabel JiaMiJYLabel;
-	public UILabel JiaMiJYMsg;
-	public static bool IsOpenJiaMiJiaoYan;
 	void CloseJiaMiJiaoYanFailed()
 	{
 		if (!IsInvoking("JiaMiJiaoYanFailed")) {
@@ -436,22 +435,20 @@ public class HardWareTest : MonoBehaviour
 
 	public void OnClickJiaMiJiaoYanBt()
 	{
-		if (JiaMiJYLabel.text != "开启校验" && !pcvr.IsJiaoYanHid) {
+		if (!IsOpenJiaMiJiaoYan) {
 			UnityEngine.Debug.Log("OnClickJiaMiJiaoYanBt...");
 			OpenJiaMiJiaoYan();
 			JiaMiJYLabel.text = "开启校验";
-			SetJiaMiJYMsg("校验中...", JiaMiJiaoYanEnum.Null);
+			SetJiaMiJYMsg("校验中...", pcvrTXManage.JIAOYANENUM.NULL);
 		}
 	}
 	
-	public static void OpenJiaMiJiaoYan()
+	public void OpenJiaMiJiaoYan()
 	{
 		if (IsOpenJiaMiJiaoYan) {
 			return;
 		}
 		IsOpenJiaMiJiaoYan = true;
-		//Instance.DelayCloseJiaMiJiaoYan();
-
 		pcvr.GetInstance().mPcvrTXManage.StartJiaoYanIO();
 	}
 	
@@ -463,15 +460,15 @@ public class HardWareTest : MonoBehaviour
 	
 	public void JiaMiJiaoYanFailed()
 	{
-		SetJiaMiJYMsg("", JiaMiJiaoYanEnum.Failed);
+		SetJiaMiJYMsg("", pcvrTXManage.JIAOYANENUM.FAILED);
 	}
 
 	public void JiaMiJiaoYanSucceed()
 	{
-		SetJiaMiJYMsg("", JiaMiJiaoYanEnum.Succeed);
+		SetJiaMiJYMsg("", pcvrTXManage.JIAOYANENUM.SUCCEED);
 	}
 	
-	public static void CloseJiaMiJiaoYan()
+	public void CloseJiaMiJiaoYan()
 	{
 		if (!IsOpenJiaMiJiaoYan) {
 			return;
@@ -485,17 +482,17 @@ public class HardWareTest : MonoBehaviour
 		JiaMiJYLabel.text = "加密校验";
 	}
 	
-	public void SetJiaMiJYMsg(string msg, JiaMiJiaoYanEnum key)
+	public void SetJiaMiJYMsg(string msg, pcvrTXManage.JIAOYANENUM key)
 	{
 		switch (key) {
-		case JiaMiJiaoYanEnum.Succeed:
+		case pcvrTXManage.JIAOYANENUM.SUCCEED:
 			CloseJiaMiJiaoYanFailed();
 			JiaMiJYMsg.text = "校验成功";
 			ResetJiaMiJYLabelInfo();
 			//ScreenLog.Log("校验成功");
 			break;
 			
-		case JiaMiJiaoYanEnum.Failed:
+		case pcvrTXManage.JIAOYANENUM.FAILED:
 			CloseJiaMiJiaoYanFailed();
 			JiaMiJYMsg.text = "校验失败";
 			ResetJiaMiJYLabelInfo();

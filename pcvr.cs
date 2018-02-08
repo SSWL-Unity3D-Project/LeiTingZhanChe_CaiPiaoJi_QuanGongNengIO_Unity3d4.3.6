@@ -9,7 +9,7 @@ public class pcvr : MonoBehaviour
     /// <summary>
     /// 是否校验hid.
     /// </summary>
-	static public bool IsJiaoYanHid;
+	static public bool IsJiaoYanHid = false;
     /// <summary>
     /// pcvr通信数据管理.
     /// </summary>

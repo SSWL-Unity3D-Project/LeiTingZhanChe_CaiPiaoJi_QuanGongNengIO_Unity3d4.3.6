@@ -14,10 +14,10 @@ public class MyCOMDevice : MonoBehaviour
 		public static  int BufLenWrite = 50;
 		public static byte[] ReadByteMsg = new byte[BufLenRead];
 		public static byte[] WriteByteMsg = new byte[BufLenWrite];
-		int ReadTimeout = 0x00064; //单位为毫秒.
+		int ReadTimeout = 0x00C8; //单位为毫秒.
 		int WriteTimeout = 0x07d0; //单位为毫秒.
         public static string ComPortName = "COM1";
-		//public static int WriteCount;
+		public static int WriteCount;
 		public static int ReadCount;
 
 		public ComThreadClass(string name)
@@ -111,7 +111,7 @@ public class MyCOMDevice : MonoBehaviour
 			try
             {
 				_SerialPort.Write(WriteByteMsg, 0, WriteByteMsg.Length);
-				//WriteCount++;
+				WriteCount++;
 			}
 			catch (Exception exception)
 			{
