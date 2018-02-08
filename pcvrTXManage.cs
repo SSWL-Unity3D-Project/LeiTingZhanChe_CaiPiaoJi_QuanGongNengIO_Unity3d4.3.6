@@ -532,89 +532,6 @@ public class pcvrTXManage : MonoBehaviour
         {
             Debug.Log("CheckHidJiaMiXinPian -> buffer_47 was wrong! val " + buffer[47].ToString("X2"));
         }
-        //byte tmpVal = 0x00;
-        //string testStrB = "";
-        //string testStrA = "";
-        //for (int i = 0; i < buffer.Length; i++)
-        //{
-        //    testStrA += buffer[i].ToString("X2") + " ";
-        //}
-        //Debug.Log("readStr: " + testStrA);
-
-        //for (int i = 0; i < JiaoYanDt.Length; i++)
-        //{
-        //    testStrB += JiaoYanDt[i].ToString("X2") + " ";
-        //}
-        //Debug.Log("GameSendDt: " + testStrB);
-
-        //string testStrC = "";
-        //for (int i = 0; i < JiaoYanDt.Length; i++)
-        //{
-        //    testStrC += JiaoYanMiMa[i].ToString("X2") + " ";
-        //}
-        //Debug.Log("GameSendMiMa: " + testStrC);
-
-        //for (int i = 11; i < 14; i++)
-        //{
-        //    tmpVal ^= buffer[i];
-        //    testStrA += buffer[i].ToString("X2") + " ";
-        //}
-
-        //if (tmpVal == buffer[10])
-        //{
-        //    bool isJiaoYanDtSucceed = false;
-        //    tmpVal = 0x00;
-        //    for (int i = 15; i < 18; i++)
-        //    {
-        //        tmpVal ^= buffer[i];
-        //    }
-
-        //    //校验2...
-        //    if (tmpVal == buffer[14]
-        //    && (JiaoYanDt[1] & 0xef) == buffer[15]
-        //    && (JiaoYanDt[2] & 0xfe) == buffer[16]
-        //    && (JiaoYanDt[3] | 0x28) == buffer[17])
-        //    {
-        //        isJiaoYanDtSucceed = true;
-        //    }
-
-        //    if (isJiaoYanDtSucceed)
-        //    {
-        //        OnEndJiaoYanIO(JIAOYANENUM.SUCCEED);
-        //        Debug.Log("JMJYCG...");
-        //    }
-        //    else
-        //    {
-        //        testStrA = "";
-        //        for (int i = 0; i < 46; i++)
-        //        {
-        //            testStrA += buffer[i].ToString("X2") + " ";
-        //        }
-
-        //        //string testStrC = "";
-        //        for (int i = 34; i < 38; i++)
-        //        {
-        //            testStrB += buffer[i].ToString("X2") + " ";
-        //        }
-
-        //        for (int i = 0; i < 4; i++)
-        //        {
-        //            testStrC += JiaoYanDt[i].ToString("X2") + " ";
-        //        }
-        //        Debug.Log("ReadByte[0 - 45] " + testStrA);
-        //        Debug.Log("ReadByte[34 - 37] " + testStrB);
-        //        Debug.Log("SendByte[21 - 24] " + testStrC);
-        //        Debug.LogError("校验数据错误!");
-        //    }
-        //}
-        //else
-        //{
-        //    testStrB = "byte[30] " + buffer[30].ToString("X2") + " "
-        //        + ", tmpVal " + tmpVal.ToString("X2");
-        //    Debug.Log("ReadByte[30 - 33] " + testStrA);
-        //    Debug.Log(testStrB);
-        //    Debug.LogError("ReadByte[30] was wrong!");
-        //}
     }
 
     /// <summary>
@@ -889,32 +806,7 @@ public class pcvrTXManage : MonoBehaviour
         {
             return;
         }
-
-        //byte tmpVal = 0x00;
-        //string testA = "";
-        //for (int i = 2; i < (MyCOMDevice.ComThreadClass.BufLenRead - 4); i++) {
-        //	if (i == 8 || i == 21) {
-        //		continue;
-        //	}
-        //	testA += MyCOMDevice.ComThreadClass.ReadByteMsg[i].ToString("X2") + " ";
-        //	tmpVal ^= MyCOMDevice.ComThreadClass.ReadByteMsg[i];
-        //}
-        //tmpVal ^= EndRead_1;
-        //tmpVal ^= EndRead_2;
-        //testA += EndRead_1 + " ";
-        //testA += EndRead_2 + " ";
-
-        //if (tmpVal != MyCOMDevice.ComThreadClass.ReadByteMsg[21]) {
-        //	if (MyCOMDevice.ComThreadClass.IsStopComTX) {
-        //		return;
-        //	}
-        //	MyCOMDevice.ComThreadClass.IsStopComTX = true;
-        //			ScreenLog.Log("testA: "+testA);
-        //			ScreenLog.LogError("tmpVal: "+tmpVal.ToString("X2")+", byte[21] "+MyCOMDevice.ComThreadClass.ReadByteMsg[21].ToString("X2"));
-        //			ScreenLog.Log("byte21 was wrong!");
-        //	return;
-        //}
-
+        
         if (IsJiaoYanHid)
         {
             CheckHidJiaMiXinPian(buffer);
@@ -1176,25 +1068,25 @@ public class pcvrTXManage : MonoBehaviour
         if (buffer[0] != ReadHead_1)
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> readHead01 was wrong! head01 " + buffer[0].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> readHead01_buffer_00 was wrong! head01 " + buffer[0].ToString("X2"));
         }
 
         if (buffer[1] != ReadHead_2)
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> readHead02 was wrong! head02 " + buffer[1].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> readHead02_buffer_01 was wrong! head02 " + buffer[1].ToString("X2"));
         }
 
         if (buffer[58] != EndRead_1)
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> readEnd01 was wrong! end01 " + buffer[58].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> readEnd01_buffer_58 was wrong! end01 " + buffer[58].ToString("X2"));
         }
 
         if (buffer[59] != EndRead_2)
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> readEnd02 was wrong! end02 " + buffer[59].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> readEnd02_buffer_59 was wrong! end02 " + buffer[59].ToString("X2"));
         }
 
         if (buffer[45] == 0xff || buffer[45] == 0x00 || (buffer[45] & 0x10) != 0x10)
@@ -1216,7 +1108,7 @@ public class pcvrTXManage : MonoBehaviour
         if (jiaoYanVal != buffer[53])
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> jiaoYanVal01 was wrong! key " + buffer[53].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> jiaoYanVal01_buffer_53 was wrong! key " + buffer[53].ToString("X2"));
         }
 
         //数据校验位2	数据位5~49的异或值、初始异或值为0x95，不包23自身
@@ -1232,7 +1124,7 @@ public class pcvrTXManage : MonoBehaviour
         if (jiaoYanVal != buffer[23])
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> jiaoYanVal02 was wrong! key " + buffer[23].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> jiaoYanVal02_buffer_23 was wrong! key " + buffer[23].ToString("X2"));
         }
 
         //全包校验	异或初值0x36、0~59都包含, 不包55自身
@@ -1248,7 +1140,7 @@ public class pcvrTXManage : MonoBehaviour
         if (jiaoYanVal != buffer[55])
         {
             isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> jiaoYanValQuanBao was wrong! key " + buffer[55].ToString("X2"));
+            Debug.LogWarning("CheckGetMsgInfo -> jiaoYanValQuanBao_buffer_55 was wrong! key " + buffer[55].ToString("X2"));
         }
 
         if (isErrorMsg)
@@ -1300,10 +1192,6 @@ public class pcvrTXManage : MonoBehaviour
     }
 
     #region PCVR_BT_EVENT
-    /// <summary>
-    /// AnJianLb[x]: 0 按键1, 1 按键2.
-    /// </summary>
-    //public UILabel[] AnJianLb;
     public enum AnJianIndex
     {
         Null = 0,
