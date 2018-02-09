@@ -157,9 +157,9 @@ public class pcvrTXManage : MonoBehaviour
         if (IsJiaoYanHid)
         {
             //校验允许1
-            buffer[29] = 0x41;
+            buffer[29] = 0x42;
             //校验允许2
-            buffer[31] = 0x11;
+            buffer[31] = 0x12;
 
             //密码指示---由第3、5、8位确定
             buffer[33] = mJiaMiPWDCmd[JiaMiPWDCmdIndex].Cmd;
@@ -490,9 +490,17 @@ public class pcvrTXManage : MonoBehaviour
     /// </summary>
     void CheckHidJiaMiXinPian(byte[] buffer)
     {
-        if ((buffer[47] & 0x14) == 0x14)
+        if (buffer[47] == 0x00)
         {
-            Debug.Log("CheckHidJiaMiXinPian -> buffer_47 was wrong! val " + buffer[47].ToString("X2"));
+            Debug.Log("CheckHidJiaMiXinPian weiJiaoYan -> buffer_47 was wrong! val " + buffer[47].ToString("X2"));
+            return;
+        }
+
+        if (buffer[47] == 0xff)
+        {
+            Debug.Log("CheckHidJiaMiXinPian jiaoYanCuoWu -> buffer_47 was wrong! val " + buffer[47].ToString("X2"));
+            //加密芯片校验失败.
+            OnEndJiaoYanIO(JIAOYANENUM.FAILED);
             return;
         }
 
@@ -516,12 +524,16 @@ public class pcvrTXManage : MonoBehaviour
 
         if (isCheckDt)
         {
-            if (jiaoYanDtArray[1] == JiaoYanDt[1]
-                && jiaoYanDtArray[2] == JiaoYanDt[2]
-                && jiaoYanDtArray[3] == JiaoYanDt[3])
+            if (jiaoYanDtArray[1] == (JiaoYanDt[1] & 0xef)
+                && jiaoYanDtArray[2] == (JiaoYanDt[2] & 0xde)
+                && jiaoYanDtArray[3] == (JiaoYanDt[3] | 0x82))
             {
+                Debug.Log("CheckHidJiaMiXinPian -> buffer_47 == " + buffer[47].ToString("X2"));
                 //加密芯片校验成功.
                 OnEndJiaoYanIO(JIAOYANENUM.SUCCEED);
+                //MyCOMDevice.ComThreadClass.ReadCount = 0; //重置ReadCount.
+                //IsCanCheckReadMsg = false;
+                //ReadMsgCount = 0;
             }
             else
             {
@@ -558,6 +570,8 @@ public class pcvrTXManage : MonoBehaviour
 
         JiaMiPWDCmdIndex = (byte)(Random.Range(0, 100) % mJiaMiPWDCmd.Length);
         JiaMiDtCmdIndex = (byte)(Random.Range(0, 100) % mJiaMiDtCmd.Length);
+        //JiaMiPWDCmdIndex = (byte)(0 % mJiaMiPWDCmd.Length); //test
+        //JiaMiDtCmdIndex = (byte)(4 % mJiaMiDtCmd.Length); //test
     }
 
     /// <summary>
@@ -760,15 +774,12 @@ public class pcvrTXManage : MonoBehaviour
     /// </summary>
     void InitJiaoYanMiMa()
     {
-        //#define First_pin			 	0xe5
-        //#define Second_pin		 	0x5d
-        //#define Third_pin		 		0x8c
-        //JiaoYanMiMa[1] = 0xe5; //0xff;
-        //JiaoYanMiMa[2] = 0x5d; //0xff;
-        //JiaoYanMiMa[3] = 0x8c; //0xff;
-        JiaoYanMiMa[1] = 0xff;
-        JiaoYanMiMa[2] = 0xff;
-        JiaoYanMiMa[3] = 0xff;
+        //#define First_pin		 	0x9a
+        //#define Second_pin		0xb7
+        //#define Third_pin		 	0xab
+        JiaoYanMiMa[1] = 0x9a;
+        JiaoYanMiMa[2] = 0xb7;
+        JiaoYanMiMa[3] = 0xab;
         JiaoYanMiMa[0] = 0x00;
         for (int i = 1; i < 4; i++)
         {
