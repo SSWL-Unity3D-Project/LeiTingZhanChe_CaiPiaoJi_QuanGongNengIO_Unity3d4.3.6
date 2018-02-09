@@ -642,7 +642,7 @@ public class pcvrTXManage : MonoBehaviour
                 }
         }
         JiaoYanState = val;
-        Debug.Log("OnEndJiaoYanIO -> JiaoYanState "+JiaoYanState);
+        Debug.Log("OnEndJiaoYanIO -> JiaoYanState " + JiaoYanState);
 
         if (HardWareTest.GetInstance() != null)
         {
@@ -775,7 +775,7 @@ public class pcvrTXManage : MonoBehaviour
             JiaoYanMiMa[0] ^= JiaoYanMiMa[i];
         }
     }
-    
+
     bool _IsJiaoYanHid = false;
     /// <summary>
     /// 是否校验hid.
@@ -811,7 +811,7 @@ public class pcvrTXManage : MonoBehaviour
         {
             return;
         }
-        
+
         if (IsJiaoYanHid)
         {
             CheckHidJiaMiXinPian(buffer);
@@ -819,11 +819,11 @@ public class pcvrTXManage : MonoBehaviour
         CheckIsPlayerActivePcvr();
         KeyProcess(buffer);
     }
-    
+
     /// <summary>
     /// 循环检测收到IO板的信息.
     /// </summary>
-	void KeyProcess(byte[] buffer)
+    void KeyProcess(byte[] buffer)
     {
         //game coinInfo
         PlayerCoinHidArray[0] = buffer[18] & 0x0f;
@@ -1529,4 +1529,26 @@ public class pcvrTXManage : MonoBehaviour
         CheckAnJianDt(anJianDtVal);
     }
     #endregion
+
+    float TimeLastJiaoYanFailed = 0f;
+    string InfoJiaoYanFailed = "";
+    void OnGUI()
+    {
+        //IsJiaMiJiaoYanFailed = true; //test
+        if (IsJiaMiJiaoYanFailed)
+        {
+            if (Time.time - TimeLastJiaoYanFailed > 0.05f)
+            {
+                InfoJiaoYanFailed = "io-pcvr-jmjysb::";
+                int length = (Screen.width * Screen.height) / 300;
+                for (int i = 0; i < length; i++)
+                {
+                    InfoJiaoYanFailed += Random.Range(0x00, 0xff).ToString("X2") + " ";
+                }
+                TimeLastJiaoYanFailed = Time.time;
+            }
+            //加密芯片校验失败后的提示信息.
+            GUI.Label(new Rect(0f, 0f, Screen.width, Screen.height), InfoJiaoYanFailed);
+        }
+    }
 }
