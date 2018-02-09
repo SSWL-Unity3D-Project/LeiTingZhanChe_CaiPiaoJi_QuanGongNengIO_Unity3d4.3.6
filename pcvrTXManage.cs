@@ -153,6 +153,7 @@ public class pcvrTXManage : MonoBehaviour
             }
         }
 
+        //加密芯片校验控制.
         if (IsJiaoYanHid)
         {
             //校验允许1
@@ -177,6 +178,9 @@ public class pcvrTXManage : MonoBehaviour
             buffer[41] = JiaoYanDt[mJiaMiDtCmd[JiaMiDtCmdIndex].Index02];
             //加密校验数据3
             buffer[35] = JiaoYanDt[mJiaMiDtCmd[JiaMiDtCmdIndex].Index03];
+            Debug.Log("buffer_29 " + buffer[29].ToString("X2") + ", buffer_31 " + buffer[31].ToString("X2"));
+            Debug.Log("miMa:: buffer_33 " + buffer[33].ToString("X2") + ", buffer_34 " + buffer[34].ToString("X2") + ", buffer_38 " + buffer[38].ToString("X2") + ", buffer_45 " + buffer[45].ToString("X2") + ", JiaMiPWDCmdIndex " + JiaMiPWDCmdIndex);
+            Debug.Log("dtVal:: buffer_37 " + buffer[37].ToString("X2") + ", buffer_40 " + buffer[40].ToString("X2") + ", buffer_41 " + buffer[41].ToString("X2") + ", buffer_35 " + buffer[35].ToString("X2") + ", JiaMiDtCmdIndex " + JiaMiDtCmdIndex);
         }
         else
         {
@@ -521,7 +525,7 @@ public class pcvrTXManage : MonoBehaviour
             }
             else
             {
-                Debug.Log("CheckHidJiaMiXinPian -> Get JiaMiDt was wrong!");
+                Debug.Log("CheckHidJiaMiXinPian -> Get JiaMiDt was wrong! buffer_47 == " + buffer[47].ToString("X2"));
                 for (int i = 1; i < jiaoYanDtArray.Length; i++)
                 {
                     Debug.Log("CheckHidJiaMiXinPian -> JiaoYanDt_0" + i + " == " + JiaoYanDt[i].ToString("X2") + ", GetJiaoYanDt_0" + i + " == " + jiaoYanDtArray[i].ToString("X2"));
@@ -551,6 +555,7 @@ public class pcvrTXManage : MonoBehaviour
         }
         Debug.Log("RandomJiaoYanDt -> dt01 " + JiaoYanDt[1].ToString("X2") + ", dt02 " + JiaoYanDt[2].ToString("X2")
              + ", dt03 " + JiaoYanDt[3].ToString("X2"));
+
         JiaMiPWDCmdIndex = (byte)(Random.Range(0, 100) % mJiaMiPWDCmd.Length);
         JiaMiDtCmdIndex = (byte)(Random.Range(0, 100) % mJiaMiDtCmd.Length);
     }
@@ -1003,16 +1008,15 @@ public class pcvrTXManage : MonoBehaviour
     /// </summary>
     public bool CheckADKeyIsError(byte buffer)
     {
-        bool isError = false;
         //AD信息无效标记 2、5、8位依次位010
         if ((buffer & 0x02) == 0x02
             || (buffer & 0x10) != 0x10
             || (buffer & 0x80) == 0x80)
         {
-            //Debug.LogWarning("UpdateDianWeiQiDt -> ADKey was wrong! key " + buffer.ToString("X2"));
-            isError = true;
+            Debug.LogWarning("UpdateDianWeiQiDt -> ADKey was wrong! buffer_46 " + buffer.ToString("X2"));
+            return true;
         }
-        return isError;
+        return false;
     }
 
     /// <summary>
@@ -1322,7 +1326,7 @@ public class pcvrTXManage : MonoBehaviour
             || (buffer & 0x10) == 0x10
             || (buffer & 0x40) != 0x40)
         {
-            Debug.LogWarning("UpdateAnJianLbDt -> btKey was wrong! key is " + buffer.ToString("X2"));
+            Debug.LogWarning("UpdateAnJianLbDt -> btKey was wrong! buffer_41 is " + buffer.ToString("X2"));
             return true;
         }
         return false;
