@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿//#define PRINT_IO_MSG
+using UnityEngine;
 using System.Collections;
 using System.Threading;
 using System;
@@ -10,15 +11,17 @@ public class MyCOMDevice : MonoBehaviour
 	{
 		//string ThreadName;
         static SerialPort _SerialPort;
-        public static int BufLenRead = 60;
-		public static  int BufLenWrite = 50;
-		public static byte[] ReadByteMsg = new byte[BufLenRead];
+        //public static int BufLenRead = 60;
+		//public static  int BufLenWrite = 50;
+        public static int BufLenRead = 60 + 1; //test
+        public static int BufLenWrite = 50 + 1; //test
+        public static byte[] ReadByteMsg = new byte[BufLenRead];
 		public static byte[] WriteByteMsg = new byte[BufLenWrite];
-		int ReadTimeout = 0x00C8; //单位为毫秒.
+		int ReadTimeout = 0x07d0; //单位为毫秒.
 		int WriteTimeout = 0x07d0; //单位为毫秒.
         public static string ComPortName = "COM1";
-		public static int WriteCount;
-		public static int ReadCount;
+		public static int WriteCountLock;
+		public static int ReadCountLock;
 
 		public ComThreadClass(string name)
 		{
@@ -78,20 +81,15 @@ public class MyCOMDevice : MonoBehaviour
 			do
             {
                 COMTxData();
-                //if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr)
-                //if (pcvr.IsJiaoYanHid)
-                //{
-                //    Thread.Sleep(100);
-                //}
-                //else
-                //{
-                //    Thread.Sleep(15);
-                //}
-                COMRxData();
-                //if (pcvr.IsJiaoYanHid || !pcvr.IsPlayerActivePcvr)
                 if (pcvr.IsJiaoYanHid)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
+                }
+
+                COMRxData();
+                if (pcvr.IsJiaoYanHid)
+                {
+                    Thread.Sleep(500);
                 }
                 else
                 {
@@ -102,7 +100,7 @@ public class MyCOMDevice : MonoBehaviour
 			CloseComPort();
 			Debug.Log("Close run thead...");
 		}
-
+        
         /// <summary>
         /// 写串口数据.
         /// </summary>
@@ -110,8 +108,29 @@ public class MyCOMDevice : MonoBehaviour
 		{
 			try
             {
-				_SerialPort.Write(WriteByteMsg, 0, WriteByteMsg.Length);
-				WriteCount++;
+#if PRINT_IO_MSG
+                if (pcvr.IsJiaoYanHid)
+                {
+                    string writeInfo = "";
+                    for (int i = 0; i < WriteByteMsg.Length; i++)
+                    {
+                        writeInfo += WriteByteMsg[i].ToString("X2") + " ";
+                    }
+                    Debug.Log("writMsg: " + writeInfo);
+                }
+#endif
+
+                _SerialPort.Write(WriteByteMsg, 0, BufLenWrite);
+				WriteCountLock++;
+                
+                if (pcvr.IsJiaoYanHid)
+                {
+                    byte[] miMaArray = new byte[4];
+                    miMaArray[1] = WriteByteMsg[34]; //密码1
+                    miMaArray[2] = WriteByteMsg[38]; //密码2
+                    miMaArray[3] = WriteByteMsg[45]; //密码3
+                    pcvrTXManage.CheckIsJiaoYanJiaMiCore(miMaArray);
+                }
 			}
 			catch (Exception exception)
 			{
@@ -125,9 +144,65 @@ public class MyCOMDevice : MonoBehaviour
 		void COMRxData()
 		{
 			try
-			{
-                _SerialPort.Read(ReadByteMsg, 0, ReadByteMsg.Length);
-				ReadCount++;
+            {
+                long timeStart = DateTime.Now.Ticks;
+                float timeOut = 1f;
+                bool isTimeOut = false;
+
+                bool isContinueRead = true;
+                byte[] reagBuf = new byte[BufLenRead];
+                int rvReadBytes = 0;
+                int indexStart = 0;
+                while (isContinueRead)
+                {
+                    int len = BufLenRead - rvReadBytes;
+                    byte[] reagBufTmp = new byte[len];
+                    rvReadBytes += _SerialPort.Read(reagBufTmp, 0, len);
+                    //Debug.Log("COMRxData -> rv " + rvReadBytes + ", len " + len);
+
+                    for (int i = 0; i < rvReadBytes; i++)
+                    {
+                        if (i + indexStart < BufLenRead)
+                        {
+                            reagBuf[i + indexStart] = reagBufTmp[i];
+                        }
+                    }
+                    indexStart = rvReadBytes;
+
+                    float dTime = (DateTime.Now.Ticks - timeStart) / 10000000f;
+                    if (dTime >= timeOut)
+                    {
+                        Debug.Log("COMRxData -> timeOut! dTime " + dTime + ", rvReadBytes " + rvReadBytes);
+                        isContinueRead = false;
+                        isTimeOut = true;
+                        break;
+                    }
+
+                    if (rvReadBytes >= BufLenRead)
+                    {
+                        isContinueRead = false;
+                        break;
+                    }
+                }
+                ReadByteMsg = reagBuf;
+
+#if PRINT_IO_MSG
+                if (pcvr.IsJiaoYanHid)
+                {
+                    string readInfo = "";
+                    for (int i = 0; i < rvReadBytes; i++)
+                    {
+                        readInfo += reagBuf[i].ToString("X2") + " ";
+                    }
+                    Debug.Log("readMsg: " + readInfo);
+                }
+#endif
+
+                if (isTimeOut)
+                {
+                    return;
+                }
+                ReadCountLock++;
 			}
 			catch (Exception exception)
 			{

@@ -32,17 +32,17 @@ public class HardWareTest : MonoBehaviour
         InputEventCtrl.GetInstance().ClickPcvrBtEvent15 += ClickPcvrBtEvent15;
     }
 
-	void FixedUpdate () 
-	{
-        GetMessage(MyCOMDevice.ComThreadClass.ReadByteMsg);
-    }
+	//void FixedUpdate () 
+	//{
+ //       GetMessage(MyCOMDevice.ComThreadClass.ReadByteMsg);
+ //   }
 
-    void GetMessage(byte[] buffer)
+    public void CheckReadComMsg(byte[] buffer)
     {
-        if (pcvr.GetInstance().mPcvrTXManage.CheckGetMsgInfoIsError(buffer))
-        {
-            return;
-        }
+        //if (pcvr.GetInstance().mPcvrTXManage.CheckGetMsgInfoIsError(buffer))
+        //{
+        //    return;
+        //}
         UpdateDianWeiQiDt(buffer);
         UpdateBiZhiDt(buffer[18], buffer[19]);
         UpdateBianMaQiLbDt(buffer);
