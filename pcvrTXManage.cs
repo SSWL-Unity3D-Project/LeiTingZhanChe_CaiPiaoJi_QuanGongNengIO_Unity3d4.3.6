@@ -1224,6 +1224,14 @@ public class pcvrTXManage : MonoBehaviour
     }
 
     /// <summary>
+    /// 设置继电器的工作命令.
+    /// </summary>
+    public void SetJiDianQiCmd(byte indexVal, JiDianQiCmd cmd)
+    {
+        pcvr.GetInstance().mPcvrTXManage.JiDianQiCmdArray[indexVal] = cmd;
+    }
+
+    /// <summary>
     /// 获取继电器控制命令.
     /// </summary>
     byte GetJiDianQiCmd()

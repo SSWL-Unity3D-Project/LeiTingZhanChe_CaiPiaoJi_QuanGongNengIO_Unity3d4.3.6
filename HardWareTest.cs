@@ -380,7 +380,7 @@ public class HardWareTest : MonoBehaviour
     /// </summary>
     public void OnClickJiDianQiBt(GameObject bt)
     {
-        int indexVal = 0;
+        byte indexVal = 0;
         string lbHead = "";
         string btName = bt.name;
         switch (btName)
@@ -403,13 +403,13 @@ public class HardWareTest : MonoBehaviour
         {
             case pcvrTXManage.JiDianQiCmd.Close:
                 {
-                    pcvr.GetInstance().mPcvrTXManage.JiDianQiCmdArray[indexVal] = pcvrTXManage.JiDianQiCmd.Open;
+                    pcvr.GetInstance().mPcvrTXManage.SetJiDianQiCmd(indexVal, pcvrTXManage.JiDianQiCmd.Open);
                     JiDianQiLbArray[indexVal].text = lbHead + "打开";
                     break;
                 }
             case pcvrTXManage.JiDianQiCmd.Open:
                 {
-                    pcvr.GetInstance().mPcvrTXManage.JiDianQiCmdArray[indexVal] = pcvrTXManage.JiDianQiCmd.Close;
+                    pcvr.GetInstance().mPcvrTXManage.SetJiDianQiCmd(indexVal, pcvrTXManage.JiDianQiCmd.Close);
                     JiDianQiLbArray[indexVal].text = lbHead + "关闭";
                     break;
                 }
