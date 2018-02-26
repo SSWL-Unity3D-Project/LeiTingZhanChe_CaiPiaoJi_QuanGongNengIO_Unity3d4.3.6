@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 public class HardWareTest : MonoBehaviour
 {
-	public static HardWareTest Instance;
+	static HardWareTest Instance;
     public static HardWareTest GetInstance()
     {
         return Instance;
