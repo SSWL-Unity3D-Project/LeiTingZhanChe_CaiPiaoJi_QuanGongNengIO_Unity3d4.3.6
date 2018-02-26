@@ -96,8 +96,7 @@ public class MyCOMDevice : MonoBehaviour
                     Thread.Sleep(15);
                 }
             }
-			while (_SerialPort.IsOpen);
-			CloseComPort();
+			while (_SerialPort != null && _SerialPort.IsOpen);
 			Debug.Log("Close run thead...");
 		}
         
@@ -153,7 +152,8 @@ public class MyCOMDevice : MonoBehaviour
                 byte[] reagBuf = new byte[BufLenRead];
                 int rvReadBytes = 0;
                 int indexStart = 0;
-                while (isContinueRead)
+                IsReadComDt = true;
+                while (isContinueRead && !IsAppQuit)
                 {
                     int len = BufLenRead - rvReadBytes;
                     byte[] reagBufTmp = new byte[len];
@@ -185,6 +185,7 @@ public class MyCOMDevice : MonoBehaviour
                     }
                 }
                 ReadByteMsg = reagBuf;
+                IsReadComDt = false;
 
 #if PRINT_IO_MSG
                 if (pcvr.IsJiaoYanHid)
@@ -207,7 +208,11 @@ public class MyCOMDevice : MonoBehaviour
 			catch (Exception exception)
 			{
 				Debug.Log("Rx error:COM..." + exception);
-			}
+                if (IsAppQuit)
+                {
+                    CloseComPort();
+                }
+            }
 		}
 
         /// <summary>
@@ -215,13 +220,13 @@ public class MyCOMDevice : MonoBehaviour
         /// </summary>
 		public void CloseComPort()
 		{
-			//IsReadComMsg = false;
 			if (_SerialPort == null || !_SerialPort.IsOpen) {
 				return;
 			}
-			_SerialPort.Close();
+            _SerialPort.Close();
 			_SerialPort = null;
-		}
+            Debug.Log("CloseComPort...");
+        }
 	}
 
     /// <summary>
@@ -237,6 +242,8 @@ public class MyCOMDevice : MonoBehaviour
     /// </summary>
     [HideInInspector]
 	public bool IsFindDeviceDt;
+    static bool IsAppQuit = false;
+    static bool IsReadComDt = false;
 	static MyCOMDevice _Instance;
     public static MyCOMDevice GetInstance()
 	{
@@ -285,10 +292,18 @@ public class MyCOMDevice : MonoBehaviour
     /// </summary>
 	void CloseComThread()
 	{
-		if (mComThreadIO != null) {
-			mComThreadIO.Abort();
-			mComThreadIO = null;
-		}
+        try
+        {
+            if (mComThreadIO != null)
+            {
+                mComThreadIO.Abort();
+                mComThreadIO = null;
+            }
+        }
+        catch (Exception exception)
+        {
+            Debug.Log("CloseComThread -> ex: " + exception);
+        }
 	}
 
     /// <summary>
@@ -297,10 +312,18 @@ public class MyCOMDevice : MonoBehaviour
 	void OnApplicationQuit()
 	{
         Debug.Log("OnApplicationQuit...Com");
-        if (mComThreadClass != null)
+        try
         {
-            mComThreadClass.CloseComPort();
+            IsAppQuit = true;
+            CloseComThread();
+            if (mComThreadClass != null && !IsReadComDt)
+            {
+                mComThreadClass.CloseComPort();
+            }
         }
-        CloseComThread();
+        catch (Exception exception)
+        {
+            Debug.Log("OnApplicationQuit -> ex: " + exception);
+        }
     }
 }
