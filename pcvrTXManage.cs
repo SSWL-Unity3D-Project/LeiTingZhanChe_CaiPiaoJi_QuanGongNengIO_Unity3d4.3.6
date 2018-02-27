@@ -1207,10 +1207,13 @@ public class pcvrTXManage : MonoBehaviour
             Debug.LogWarning("CheckGetMsgInfo -> readEnd02_buffer_59 was wrong! end02 " + buffer[59].ToString("X2"));
         }
 
-        if (buffer[45] == 0xff || buffer[45] == 0x00 || (buffer[45] & 0x10) != 0x10)
+        if (IsJiaoYanHid)
         {
-            isErrorMsg = true;
-            Debug.LogWarning("CheckGetMsgInfo -> buffer_45 was wrong! val " + buffer[45].ToString("X2"));
+            if (buffer[45] == 0xff || buffer[45] == 0x00 || (buffer[45] & 0x10) != 0x10)
+            {
+                isErrorMsg = true;
+                Debug.LogWarning("CheckGetMsgInfo -> buffer_45 was wrong! val " + buffer[45].ToString("X2"));
+            }
         }
 
         //校验位1 位号6~55的疑惑校验值、初始校验异或值为0x38，不包含53自身
