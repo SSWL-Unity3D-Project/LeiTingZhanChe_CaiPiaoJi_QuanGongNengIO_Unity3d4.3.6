@@ -61,6 +61,11 @@ public class pcvrTXManage : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public int[] CaiPiaoCountPrint = new int[2];
+    /// <summary>
+    /// 彩票打印失败次数.
+    /// </summary>
+    [HideInInspector]
+    public byte[] CaiPiaoPrintFailedCount = new byte[2];
     CaiPiaoPrintState[] CaiPiaoJiPrintStArray = new CaiPiaoPrintState[2];
     /// <summary>
     /// 是否清除hid币值.
@@ -974,6 +979,25 @@ public class pcvrTXManage : MonoBehaviour
     }
 
     /// <summary>
+    /// 获取是否可以继续打印彩票.
+    /// </summary>
+    public bool GetIsCanPrintCaiPiao(CaiPiaoJi indexCaiPiaoJi)
+    {
+        if (CaiPiaoCountPrint[(int)indexCaiPiaoJi] <= 0)
+        {
+            //目前需要打印彩票为0时,可以继续开启打印彩票.
+            return true;
+        }
+
+        if (CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi] >= 3)
+        {
+            //目前打印彩票失败次数大于3时,可以继续开启打印彩票(认为彩票机没有彩票了).
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// 设置彩票机打印命令.
     /// </summary>
     public void SetCaiPiaoPrintCmd(CaiPiaoPrintCmd printCmd, CaiPiaoJi indexCaiPiaoJi, int caiPiaoCount)
@@ -1001,7 +1025,7 @@ public class pcvrTXManage : MonoBehaviour
                         Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print wuXiao!");
                     }
 
-                    if (CaiPiaoCountPrint[(int)indexCaiPiaoJi] > 0)
+                    if (CaiPiaoCountPrint[(int)indexCaiPiaoJi] > 0 && CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi] <= 3)
                     {
                         SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.QuanPiaoPrint, indexCaiPiaoJi, CaiPiaoCountPrint[(int)indexCaiPiaoJi]);
                     }
@@ -1015,12 +1039,14 @@ public class pcvrTXManage : MonoBehaviour
                     {
                         CaiPiaoCountPrint[(int)indexCaiPiaoJi] -= 1;
                     }
+                    CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi] = 0;
                     break;
                 }
             case CaiPiaoPrintState.Failed:
                 {
-                    Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print failed!");
+                    Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print failed! failedCount " + CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi]);
                     SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi, 0);
+                    CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi]++;
                     break;
                 }
         }

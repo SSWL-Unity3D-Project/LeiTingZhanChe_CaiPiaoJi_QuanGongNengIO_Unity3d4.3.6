@@ -132,7 +132,7 @@ public class HardWareTest : MonoBehaviour
                 }
         }
 
-        if (pcvr.GetInstance().mPcvrTXManage.CaiPiaoCountPrint[(int)caiPiaoJi] <= 0)
+        if (pcvr.GetInstance().mPcvrTXManage.GetIsCanPrintCaiPiao(caiPiaoJi))
         {
             pcvr.GetInstance().mPcvrTXManage.SetCaiPiaoPrintCmd(printCmd, caiPiaoJi, countCaiPiao);
         }
