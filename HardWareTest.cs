@@ -13,7 +13,6 @@ public class HardWareTest : MonoBehaviour
     void Start ()
 	{
 		Instance = this;
-		pcvr.GetInstance();
 		JiaMiJiaoYanCtrlObj.SetActive(IsJiaMiTest);
         InputEventCtrl.GetInstance().ClickPcvrBtEvent01 += ClickPcvrBtEvent01;
         InputEventCtrl.GetInstance().ClickPcvrBtEvent02 += ClickPcvrBtEvent02;

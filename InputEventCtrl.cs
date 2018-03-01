@@ -15,7 +15,8 @@ public class InputEventCtrl : MonoBehaviour
 		{
 			GameObject obj = new GameObject("_InputEventCtrl");
 			Instance = obj.AddComponent<InputEventCtrl>();
-		}
+            pcvr.GetInstance();
+        }
 		return Instance;
 	}
 
