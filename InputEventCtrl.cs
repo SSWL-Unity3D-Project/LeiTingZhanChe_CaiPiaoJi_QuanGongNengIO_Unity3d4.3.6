@@ -7,17 +7,22 @@ public class InputEventCtrl : MonoBehaviour
         UP = 1,
         DOWN = -1
     }
-
-	static private InputEventCtrl Instance = null;
-	static public InputEventCtrl GetInstance()
+    /// <summary>
+    /// ¼àÌýµçÄÔ°´¼üÏìÓ¦.
+    /// </summary>
+    [HideInInspector]
+    public ListenPcInputEvent mListenPcInputEvent;
+    static InputEventCtrl _Instance = null;
+    public static InputEventCtrl GetInstance()
 	{
-		if(Instance == null)
+		if(_Instance == null)
 		{
 			GameObject obj = new GameObject("_InputEventCtrl");
-			Instance = obj.AddComponent<InputEventCtrl>();
+			_Instance = obj.AddComponent<InputEventCtrl>();
+            _Instance.mListenPcInputEvent = obj.AddComponent<ListenPcInputEvent>();
             pcvr.GetInstance();
         }
-		return Instance;
+		return _Instance;
 	}
 
     #region CaiPiaoJi Event
