@@ -1038,6 +1038,7 @@ public class pcvrTXManage : MonoBehaviour
                     if (CaiPiaoJiPrintStArray[(int)indexCaiPiaoJi] != CaiPiaoPrintState.Succeed)
                     {
                         CaiPiaoCountPrint[(int)indexCaiPiaoJi] -= 1;
+                        InputEventCtrl.GetInstance().OnCaiPiaJiChuPiao(indexCaiPiaoJi);
                     }
                     CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi] = 0;
                     break;
@@ -1047,6 +1048,11 @@ public class pcvrTXManage : MonoBehaviour
                     Debug.Log("CaiPiaoJi_" + indexCaiPiaoJi + " -> print failed! failedCount " + CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi]);
                     SetCaiPiaoPrintCmd(CaiPiaoPrintCmd.StopPrint, indexCaiPiaoJi, 0);
                     CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi]++;
+                    if (CaiPiaoPrintFailedCount[(int)indexCaiPiaoJi] > 3)
+                    {
+                        //彩票机无票了.
+                        InputEventCtrl.GetInstance().OnCaiPiaJiWuPiao(indexCaiPiaoJi);
+                    }
                     break;
                 }
         }

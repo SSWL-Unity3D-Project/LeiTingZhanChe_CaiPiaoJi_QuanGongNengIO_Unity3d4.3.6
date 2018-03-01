@@ -19,8 +19,39 @@ public class InputEventCtrl : MonoBehaviour
 		return Instance;
 	}
 
-	#region Click Button Envent
-	public delegate void EventHandel(ButtonState val);
+    #region CaiPiaoJi Event
+    /// <summary>
+    /// 彩票机无票事件.
+    /// </summary>
+    public delegate void CaiPiaoJiWuPiaoEvent(pcvrTXManage.CaiPiaoJi val);
+    public event CaiPiaoJiWuPiaoEvent OnCaiPiaJiWuPiaoEvent;
+    public void OnCaiPiaJiWuPiao(pcvrTXManage.CaiPiaoJi val)
+    {
+        if (OnCaiPiaJiWuPiaoEvent != null)
+        {
+            OnCaiPiaJiWuPiaoEvent(val);
+        }
+    }
+
+    /// <summary>
+    /// 彩票机出票响应事件.
+    /// </summary>
+    public delegate void CaiPiaoJiChuPiaoEvent(pcvrTXManage.CaiPiaoJi val);
+    public event CaiPiaoJiChuPiaoEvent OnCaiPiaJiChuPiaoEvent;
+    public void OnCaiPiaJiChuPiao(pcvrTXManage.CaiPiaoJi val)
+    {
+        if (OnCaiPiaJiChuPiaoEvent != null)
+        {
+            OnCaiPiaJiChuPiaoEvent(val);
+        }
+    }
+    #endregion
+
+    #region Click Button Event
+    /// <summary>
+    /// 按键响应事件.
+    /// </summary>
+    public delegate void EventHandel(ButtonState val);
     public event EventHandel ClickPcvrBtEvent01;
     public void ClickPcvrBt01(ButtonState val)
     {
