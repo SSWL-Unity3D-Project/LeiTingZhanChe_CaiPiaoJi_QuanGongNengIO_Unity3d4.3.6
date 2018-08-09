@@ -2,6 +2,11 @@
 
 public class pcvr : MonoBehaviour
 {
+    public enum ButtonState : int
+    {
+        UP = 1,
+        DOWN = -1
+    }
     /// <summary>
     /// 是否是硬件版.
     /// </summary>

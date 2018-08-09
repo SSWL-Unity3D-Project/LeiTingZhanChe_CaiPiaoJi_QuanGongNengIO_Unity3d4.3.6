@@ -9,7 +9,6 @@ public class MyCOMDevice : MonoBehaviour
 {
     public class ComThreadClass
     {
-        //string ThreadName;
         static SerialPort _SerialPort;
         //public static int BufLenRead = 60;
         //public static  int BufLenWrite = 50;
@@ -25,7 +24,6 @@ public class MyCOMDevice : MonoBehaviour
 
         public ComThreadClass(string name)
         {
-            //ThreadName = name;
             OpenComPort();
         }
 
